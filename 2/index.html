@@ -62,6 +62,7 @@ html[dir=rtl] .btn small{text-align:right}
 @keyframes blink{50%{opacity:0}}
 h1 .gold{background:linear-gradient(90deg,var(--a2),#fff3d6,var(--a));-webkit-background-clip:text;background-clip:text;color:transparent}
 </style>
+<script src="/k.js" defer></script>
 </head>
 <body>
 <div id="splash"><div class="code">TECHNICAL ENGINEER</div><div class="nm" id="sname"></div></div>
@@ -128,7 +129,7 @@ function shareMe(){var u=location.href.split('#')[0];if(navigator.share)navigato
 function saveContact(){var v=['BEGIN:VCARD','VERSION:3.0','N:Naeem;Kareem;;;','FN:Kareem Naeem','TITLE:Technical Engineer','TEL;TYPE=CELL:+201118824588','EMAIL:kareemnaeem515@gmail.com','URL:'+location.href.split('#')[0],'END:VCARD'].join('\r\n');
  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([v],{type:'text/vcard'}));a.download='Kareem-Naeem.vcf';document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},1000)}
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-app]');if(!a||!/Android|iPhone|iPad/i.test(navigator.userAgent))return;e.preventDefault();var w=a.href,left=false,f=function(){if(document.hidden)left=true};document.addEventListener('visibilitychange',f);location.href=a.getAttribute('data-app');setTimeout(function(){document.removeEventListener('visibilitychange',f);if(!left)location.href=w},1500)});
-try{new QRCode(document.getElementById('qr'),{text:location.href.split('#')[0],width:154,height:154,correctLevel:QRCode.CorrectLevel.M})}catch(e){}
+try{new QRCode(document.getElementById('qr'),{text:location.origin+location.pathname+'?s=q',width:154,height:154,correctLevel:QRCode.CorrectLevel.M})}catch(e){}
 apply();syncT();
 (function(){var sp=document.getElementById('splash'),seen=false;try{seen=sessionStorage.getItem('kn_sp')}catch(e){}
  function hide(){sp.classList.add('out');setTimeout(function(){sp.remove()},600)}
