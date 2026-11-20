@@ -139,6 +139,30 @@ details.all summary::-webkit-details-marker{display:none}
 .reveal.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.fab{animation:none}html{scroll-behavior:auto}}
 @media (min-width:760px){.unit{flex-basis:300px}}
+.arr{display:flex;gap:6px}
+.arr button{width:40px;height:40px;border-radius:20px;border:1px solid var(--line);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.arr svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+@media (hover:none){.arr{display:none}}
+.hscroll.drag{scroll-snap-type:none;cursor:grabbing;user-select:none}
+.heads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 24px}
+.head{padding:18px;display:flex;flex-direction:column;gap:8px}
+.head .av{width:52px;height:52px;font-size:20px;border:1px solid var(--gold);color:var(--goldT)}
+.head.main{background:#14120F;color:#F2ECE1;border-color:#3A3227}
+.head.main .av{color:#C9A46A;border-color:#C9A46A}
+.head b{font:700 19px/1.3 'Amiri',serif}.head span{font-size:12px;color:var(--muted)}.head.main span{color:#C9A46A}
+.admin{position:fixed;inset:0;background:var(--bg);z-index:50;overflow-y:auto;padding-bottom:40px}
+.admin .in{max-width:620px;margin:0 auto;padding:0 20px;display:flex;flex-direction:column;gap:16px}
+.ad-top{position:sticky;top:0;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line);z-index:2}
+.ad-top b{font:700 24px 'Amiri',serif}
+.ad-msg{font-size:14px;color:var(--goldT);min-height:20px}
+.ad-form{padding:18px;display:flex;flex-direction:column;gap:12px}
+.ad-form textarea{min-height:96px;border-radius:14px;border:1px solid var(--line);background:var(--bg);padding:12px 14px;font:inherit;font-size:16px;width:100%;resize:vertical}
+.ad-prev{width:100%;aspect-ratio:4/3;border-radius:14px;background:#14120F center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#C9A46A;font-size:13px}
+.ad-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px}
+.ad-item .th{width:56px;height:56px;border-radius:12px;background:#14120F center/cover no-repeat;flex:none}
+.ad-item .tx{flex:1;display:flex;flex-direction:column;gap:2px;font-size:14px}.ad-item .tx small{color:var(--muted);font-size:12px}
+.sbtn{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--line);background:transparent;cursor:pointer;font-size:13px;white-space:nowrap}
+.sbtn.warn{border-color:#B4483A;color:#B4483A}
 </style>
 <script src="/k.js" defer></script>
 </head>
@@ -169,7 +193,7 @@ details.all summary::-webkit-details-marker{display:none}
 <section class="stats" id="stats"></section>
 
 <section class="sec" id="units">
-  <div class="sh"><h2 data-en="Featured units">وحدات مميزة</h2><small id="unitsCount"></small></div>
+  <div class="sh"><h2 data-en="Featured units">وحدات مميزة</h2><div style="display:flex;align-items:center;gap:10px"><small id="unitsCount"></small><div class="arr" data-for="unitList"></div></div></div>
   <div class="hscroll" id="unitList"></div>
   <p class="note" id="unitsNote" data-en="Sample units — the office updates this list from its sheet.">وحدات للعرض كمثال، والمكتب بيحدّث القايمة من الشيت.</p>
 </section>
@@ -239,14 +263,14 @@ details.all summary::-webkit-details-marker{display:none}
 </section>
 
 <section class="sec" id="team">
-  <div class="sh"><h2 data-en="The team">الفريق</h2><small id="teamCount"></small></div>
-  <div class="owner"><div class="av" id="ownerI"></div><div><b id="ownerN"></b><span id="ownerR"></span></div></div>
+  <div class="sh"><h2 data-en="The team">الفريق</h2><div style="display:flex;align-items:center;gap:10px"><small id="teamCount"></small><div class="arr" data-for="leads"></div></div></div>
+  <div class="heads" id="heads"></div>
   <div class="hscroll" id="leads"></div>
   <details class="all"><summary><span id="allT"></span><span aria-hidden="true">+</span></summary><div id="allList"></div></details>
 </section>
 
 <section class="sec" id="reviews" hidden>
-  <div class="sh"><h2 data-en="Our clients say">عملاءنا بيقولوا</h2></div>
+  <div class="sh"><h2 data-en="Our clients say">عملاءنا بيقولوا</h2><div class="arr" data-for="revList"></div></div>
   <div class="hscroll" id="revList"></div>
 </section>
 
@@ -275,11 +299,57 @@ details.all summary::-webkit-details-marker{display:none}
 </div>
 <div class="toast" id="toast"></div>
 
+<div class="admin" id="admin" hidden>
+  <div class="in">
+    <div class="ad-top"><b>لوحة نور</b><button class="sbtn" type="button" id="adX">رجوع للصفحة</button></div>
+    <div class="ad-msg" id="adMsg"></div>
+    <form id="adLogin" class="ad-form card">
+      <div class="field"><label for="adPin">الرقم السري</label><input id="adPin" type="password" inputmode="numeric" autocomplete="current-password"></div>
+      <button class="btn" type="submit">دخول</button>
+    </form>
+    <div id="adBody" hidden style="display:flex;flex-direction:column;gap:16px">
+      <div class="seg" id="adTabs" style="margin:0">
+        <button type="button" class="on" data-t="u">الوحدات</button><button type="button" data-t="r">الآراء</button><button type="button" data-t="s">الأرقام</button>
+      </div>
+      <div id="adU">
+        <form class="ad-form card" id="uForm">
+          <b class="serif" style="font-size:20px" id="uTitle">وحدة جديدة</b>
+          <label class="ad-prev" id="uPrev" for="uFile">اضغطي هنا لصورة الوحدة</label>
+          <input id="uFile" type="file" accept="image/*" hidden>
+          <div class="field"><label for="uName">الوحدة</label><input id="uName" placeholder="شقة 165 م²" required></div>
+          <div class="field"><label for="uLoc">المكان</label><input id="uLoc" placeholder="زهراء المعادي"></div>
+          <div class="field"><label for="uPrice">السعر أو نظام السداد</label><input id="uPrice" placeholder="3,250,000 ج"></div>
+          <div class="field"><label for="uBadge">البادج</label><input id="uBadge" list="badges" placeholder="ريسيل"><datalist id="badges"><option value="ريسيل"><option value="برايمري"><option value="تجاري"><option value="جديد"><option value="فرصة"></datalist></div>
+          <div class="row2"><button class="btn" type="submit">حفظ</button><button class="btn ghost" type="button" id="uNew">جديدة</button></div>
+        </form>
+        <div id="uList" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div>
+      </div>
+      <div id="adR" hidden>
+        <form class="ad-form card" id="rForm">
+          <b class="serif" style="font-size:20px" id="rTitle">رأي جديد</b>
+          <div class="field"><label for="rName">اسم العميل</label><input id="rName" required></div>
+          <div class="field"><label for="rUnit">اشترى إيه</label><input id="rUnit" placeholder="شقة في زهراء المعادي"></div>
+          <div class="field"><label for="rText">رأيه</label><textarea id="rText" required></textarea></div>
+          <div class="row2"><button class="btn" type="submit">حفظ</button><button class="btn ghost" type="button" id="rNew">جديد</button></div>
+        </form>
+        <div id="rList" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div>
+      </div>
+      <form id="adS" class="ad-form card" hidden>
+        <div class="field"><label for="sYears">سنين في السوق</label><input id="sYears" inputmode="numeric"></div>
+        <div class="field"><label for="sSold">وحدة اتباعت</label><input id="sSold" inputmode="numeric"></div>
+        <div class="field"><label for="sClients">عدد العملاء</label><input id="sClients" inputmode="numeric"></div>
+        <button class="btn" type="submit">حفظ الأرقام</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
 {
 /* ================= بيانات BiB (أي تعديل هنا بس) ================= */
 const BIB = {
   page: 'https://nfc341.github.io/bib/',
+  api: 'https://script.google.com/macros/s/AKfycbwDnIkHK6J5hs1jvtYJqhyADaDS5166EFLKjPHkXrOQ6s5jVsUAbJ2gUwmrLelnqPMZ8Q/exec', // سكريبت بيانات BiB (لوحة نور)
   whatsapp: '201010954461',              // نور طارق — الرقم الأساسي للصفحة
   telegram: 'https://t.me/+201010954461',
   tiktok: '',                            // لينك تيك توك
@@ -287,13 +357,15 @@ const BIB = {
   groups: '',                            // لينك جروب الفيس
   maps: '',                              // لينك اللوكيشن على خرايط جوجل
   address: ['زهراء المعادي، القاهرة', 'Zahraa El Maadi, Cairo'],
-  sheetId: '',                           // ID شيت الوحدات والآراء (نور بتتحكم فيه)
-  stats: [[10, '', 'سنين في السوق', 'Years in the market'], [850, '+', 'وحدة اتباعت', 'Units sold'], [1200, '+', 'عميل', 'Clients']],
+  stats: [['years', 10, '', 'سنين في السوق', 'Years in the market'], ['sold', 850, '+', 'وحدة اتباعت', 'Units sold'], ['clients', 1200, '+', 'عميل', 'Clients']],
   advisors: [
     ['201023145333', 'شيماء مجدي', 'Shaimaa Magdy', 'مديرة المكتب', 'Office manager'],
     ['201010954461', 'نور طارق', 'Nour Tarek', 'مديرة التسويق', 'Marketing manager']
   ],
-  owner: ['محمد الشاذلي', 'Mohamed El-Shazly', 'المؤسس · ومعاه شيماء مجدي، مديرة المكتب', 'Founder · with Shaimaa Magdy, office manager'],
+  heads: [
+    ['محمد الشاذلي', 'Mohamed El-Shazly', 'المالك وصاحب المكتب', 'Owner & founder'],
+    ['شيماء مجدي', 'Shaimaa Magdy', 'مديرة المكتب', 'Office manager']
+  ],
   teams: [
     ['آيات مجدي', 'Ayat Magdy', 'f', [['عبدالرحمن طارق', 'Abdelrahman Tarek'], ['زياد مجدي', 'Ziad Magdy']]],
     ['علي طارق', 'Ali Tarek', 'm', [['محمد إبراهيم', 'Mohamed Ibrahim']]],
@@ -316,7 +388,7 @@ const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { ret
 let src = new URLSearchParams(location.search).get('s') || '';
 try { if (src) sessionStorage.setItem('bib_src', src); else src = sessionStorage.getItem('bib_src') || ''; } catch (e) {}
 let en = store.get('bib_lang') === 'en';
-let tab = 'p', slot = '';
+let tab = 'p', slot = '', animated = false;
 const L = (a, b) => en ? b : a;
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const fmt = n => Math.round(n).toLocaleString('en-US');
@@ -337,44 +409,36 @@ const ICONS = {
   pin: '<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
   save: '<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M19 8v6M16 11h6"/>'
 };
-const svg = k => '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICONS[k] + '</svg>';
+const svg = (k, st) => '<svg viewBox="0 0 24 24" aria-hidden="true"' + (st ? ' style="' + st + '"' : '') + '>' + ICONS[k] + '</svg>';
+const ICO_ST = 'width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none';
 
-/* ---------- الوحدات والآراء من الشيت ---------- */
-let units = BIB.sampleUnits, reviews = [], fromSheet = false;
-function csv(t) {
-  const rows = []; let r = [], f = '', q = false;
-  for (let i = 0; i < t.length; i++) {
-    const c = t[i];
-    if (q) { if (c === '"' && t[i + 1] === '"') { f += '"'; i++; } else if (c === '"') q = false; else f += c; }
-    else if (c === '"') q = true; else if (c === ',') { r.push(f); f = ''; }
-    else if (c === '\n') { r.push(f); rows.push(r); r = []; f = ''; } else if (c !== '\r') f += c;
-  }
-  if (f || r.length) { r.push(f); rows.push(r); }
-  return rows.slice(1).filter(x => x.some(v => v.trim()));
-}
+/* ---------- الوحدات والآراء (من لوحة نور) ---------- */
+let units = BIB.sampleUnits, reviews = [], live = false, cache = null;
 function img(u) {
   u = String(u || '').trim(); if (!u) return '';
-  const m = u.match(/\/d\/([\w-]{20,})/) || u.match(/[?&]id=([\w-]{20,})/);
-  return m ? 'https://lh3.googleusercontent.com/d/' + m[1] + '=w800' : u;
+  if (!/^https:\/\//.test(u)) return '';
+  const m = u.match(/drive\.google\.com\/.*(?:\/d\/|[?&]id=)([\w-]{20,})/);
+  return m ? 'https://lh3.googleusercontent.com/d/' + m[1] + '=w1000' : u;
 }
-function sheetUrl(name) { return 'https://docs.google.com/spreadsheets/d/' + BIB.sheetId + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(name); }
-async function loadSheet() {
-  if (!BIB.sheetId) return;
-  try {
-    const u = csv(await (await fetch(sheetUrl('units'))).text());
-    if (u.length) { units = u; fromSheet = true; renderUnits(); }
-  } catch (e) {}
-  try {
-    const r = csv(await (await fetch(sheetUrl('reviews'))).text());
-    if (r.length) { reviews = r; renderReviews(); }
-  } catch (e) {}
+function applyData(d) {
+  if (!d || !d.ok) return;
+  cache = d; live = true;
+  units = (d.units || []).map(u => [u.name, u.loc, u.price, u.img, u.badge]);
+  reviews = (d.reviews || []).map(r => [r.name, r.unit, r.text]);
+  BIB.stats.forEach(s => { if (d.stats && d.stats[s[0]] != null) s[1] = d.stats[s[0]]; });
+  renderStats(!animated); renderUnits(); renderReviews();
+  if (!$('admin').hidden) renderAdmin();
+}
+async function loadData() {
+  if (!BIB.api) return;
+  try { applyData(await (await fetch(BIB.api + '?t=' + Date.now())).json()); } catch (e) {}
 }
 
 /* ---------- الرسم ---------- */
 function renderStatic() {
   document.documentElement.lang = en ? 'en' : 'ar';
   document.documentElement.dir = en ? 'ltr' : 'rtl';
-  document.querySelectorAll('[data-en]').forEach(el => {
+  document.querySelectorAll('.wrap [data-en], .sheet [data-en]').forEach(el => {
     if (el.dataset.ar == null) el.dataset.ar = el.textContent;
     el.textContent = en ? el.dataset.en : el.dataset.ar;
   });
@@ -382,27 +446,38 @@ function renderStatic() {
     if (el.dataset.arPh == null) el.dataset.arPh = el.placeholder;
     el.placeholder = en ? el.dataset.enPh : el.dataset.arPh;
   });
-  const brand = L('Broker', 'بروكر');
+  const brand = 'Broker';
   document.querySelectorAll('[data-brand]').forEach(el => el.textContent = brand);
   $('h1').innerHTML = L('أهلاً بيك', 'Welcome') + '<br>' + L('في', 'to') + ' <strong>BiB <em>' + brand + '</em></strong>';
   $('sellH').innerHTML = L('عندك وحدة؟<br><em>إحنا نبيعهالك</em>', 'Have a unit?<br><em>We will sell it</em>');
   $('langBtn').textContent = L('EN', 'ع');
   $('themeBtn').setAttribute('aria-label', L('تغيير السطوع', 'Toggle brightness'));
   $('fab').href = wa(BIB.whatsapp, L('أهلاً، عايز أستفسر عن وحدة', 'Hello, I would like to ask about a unit') + srcLine());
+  const prev = en ? 'M15 6l-6 6 6 6' : 'M9 6l6 6-6 6', next = en ? 'M9 6l6 6-6 6' : 'M15 6l-6 6 6 6';
+  document.querySelectorAll('.arr').forEach(a => {
+    a.innerHTML = '<button type="button" data-d="-1" aria-label="' + L('السابق', 'Previous') + '"><svg viewBox="0 0 24 24"><path d="' + prev + '"/></svg></button>' +
+      '<button type="button" data-d="1" aria-label="' + L('التالي', 'Next') + '"><svg viewBox="0 0 24 24"><path d="' + next + '"/></svg></button>';
+    a.querySelectorAll('button').forEach(b => b.onclick = () => {
+      const box = $(a.dataset.for), card = box.firstElementChild;
+      const w = card ? card.getBoundingClientRect().width + 12 : 260;
+      box.scrollBy({ left: Number(b.dataset.d) * w * (en ? 1 : -1), behavior: 'smooth' });
+    });
+  });
 }
 function renderStats(animate) {
-  $('stats').innerHTML = BIB.stats.map((s, i) => '<div class="stat"><b data-to="' + s[0] + '" data-pre="' + s[1] + '">' + (animate ? s[1] + '0' : s[1] + fmt(s[0])) + '</b><span>' + L(s[2], s[3]) + '</span></div>').join('');
+  $('stats').innerHTML = BIB.stats.map(s => '<div class="stat"><b data-to="' + s[1] + '" data-pre="' + s[2] + '">' + (animate ? s[2] + '0' : s[2] + fmt(s[1])) + '</b><span>' + L(s[3], s[4]) + '</span></div>').join('');
 }
 function renderUnits() {
+  $('units').hidden = live && !units.length;
   $('unitList').innerHTML = units.map(u => {
     const p = img(u[3]);
     const msg = L('أهلاً، عايز أستفسر عن الوحدة دي:', 'Hello, I am interested in this unit:') + '\n' + u[0] + ' — ' + u[1] + '\n' + u[2] + srcLine();
-    return '<article class="unit card"><div class="ph">' + (p ? '<img src="' + esc(p) + '" alt="' + esc(u[0]) + '" loading="lazy">' : '') +
+    return '<article class="unit card"><div class="ph">' + (p ? '<img src="' + esc(p) + '" alt="' + esc(u[0]) + '" loading="lazy" draggable="false">' : '') +
       (u[4] ? '<span class="badge">' + esc(u[4]) + '</span>' : '') + '</div><div class="in"><h3>' + esc(u[0]) + '</h3><span class="meta">' + esc(u[1]) + '</span>' +
       '<span class="price">' + esc(u[2]) + '</span><a class="ask" data-k="استفسار وحدة" href="' + esc(wa(BIB.whatsapp, msg)) + '">' + L('استفسر عن الوحدة', 'Ask about this unit') + '</a></div></article>';
   }).join('');
   $('unitsCount').textContent = units.length + ' ' + L('وحدات', 'units');
-  $('unitsNote').hidden = fromSheet;
+  $('unitsNote').hidden = live;
 }
 function renderDepts() {
   const D = {
@@ -410,7 +485,7 @@ function renderDepts() {
     r: [['وحدات جاهزة أو قريبة التسليم، متفحّصة ومتسعّرة صح.', 'Ready or near-delivery units, checked and fairly priced.'], ['محلات ومكاتب شغالة أو جاهزة للتشغيل في أماكن عليها حركة.', 'Running or ready shops and offices in busy locations.']]
   }[tab];
   $('resD').textContent = L(D[0][0], D[0][1]); $('comD').textContent = L(D[1][0], D[1][1]);
-  document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  document.querySelectorAll('#depts .seg button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
 }
 function calc() {
   const price = num($('cPrice').value), down = Number($('cDown').value), years = Number($('cYears').value);
@@ -420,28 +495,25 @@ function calc() {
   $('cSummary').textContent = L('مقدم ', 'Down payment ') + fmt(price * down / 100) + L(' ج · على ', ' EGP · over ') + years + L(' سنين', ' years');
   return { price, down, years, m };
 }
+const SLOTS = [['12 الضهر', '12 PM'], ['3 العصر', '3 PM'], ['6 المغرب', '6 PM'], ['8 بالليل', '8 PM']];
 function renderDays() {
   const names = en ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : ['الأحد', 'الاتنين', 'التلات', 'الأربع', 'الخميس', 'الجمعة', 'السبت'];
   const keep = $('bDay').value; let h = '';
   for (let i = 1; i <= 7; i++) { const d = new Date(Date.now() + i * 864e5); const v = d.getDate() + '/' + (d.getMonth() + 1); h += '<option value="' + v + '">' + names[d.getDay()] + ' ' + v + '</option>'; }
   $('bDay').innerHTML = h; if (keep) $('bDay').value = keep;
-  const S = [['12 الضهر', '12 PM'], ['3 العصر', '3 PM'], ['6 المغرب', '6 PM'], ['8 بالليل', '8 PM']];
-  $('slots').innerHTML = S.map((s, i) => '<button type="button" data-i="' + i + '" class="' + (slot === String(i) ? 'on' : '') + '">' + L(s[0], s[1]) + '</button>').join('');
+  $('slots').innerHTML = SLOTS.map((s, i) => '<button type="button" data-i="' + i + '" class="' + (slot === String(i) ? 'on' : '') + '">' + L(s[0], s[1]) + '</button>').join('');
   $('slots').querySelectorAll('button').forEach(b => b.onclick = () => { slot = b.dataset.i; renderDays(); });
-  renderDays.S = S;
 }
 function renderTeam() {
   const T = BIB.teams, M = BIB.marketing;
-  const total = 2 + T.reduce((a, t) => a + 1 + t[3].length, 0) + 1 + M[2].length;
+  const total = BIB.heads.length + T.reduce((a, t) => a + 1 + t[3].length, 0) + 1 + M[2].length;
   $('teamCount').textContent = total + ' ' + L('فرد', 'people');
-  $('ownerI').textContent = L(BIB.owner[0], BIB.owner[1]).charAt(0);
-  $('ownerN').textContent = L(BIB.owner[0], BIB.owner[1]);
-  $('ownerR').textContent = L(BIB.owner[2], BIB.owner[3]);
+  $('heads').innerHTML = BIB.heads.map((h, i) => '<div class="head card' + (i === 0 ? ' main' : '') + '"><div class="av">' + esc(L(h[0], h[1]).charAt(0)) + '</div><b>' + esc(L(h[0], h[1])) + '</b><span>' + esc(L(h[2], h[3])) + '</span></div>').join('');
   const lead = (n, ne, sub) => '<div class="lead-c card"><div class="av">' + esc(L(n, ne).charAt(0)) + '</div><b>' + esc(L(n, ne)) + '</b><span>' + esc(sub) + '</span></div>';
-  $('leads').innerHTML = T.map(t => lead(t[0], t[1], t[3].length ? L((t[2] === 'f' ? 'قائدة فريق · ' : 'قائد فريق · ') + t[3].length + (t[2] === 'f' ? ' معاها' : ' معاه'), 'Team lead · ' + t[3].length) : L('مستشارة مبيعات', 'Sales advisor'))).join('') +
-    lead(M[0], M[1], L('مديرة التسويق · ', 'Marketing manager · ') + M[2].length);
+  $('leads').innerHTML = T.map(t => lead(t[0], t[1], t[3].length ? L(t[2] === 'f' ? 'قائدة فريق' : 'قائد فريق', 'Team lead') : L('مستشارة مبيعات', 'Sales advisor'))).join('') +
+    lead(M[0], M[1], L('مديرة التسويق', 'Marketing manager'));
   $('allT').textContent = L('كل الفريق', 'Full team') + ' (' + total + ')';
-  $('allList').innerHTML = T.map(t => '<div class="tm"><b>' + esc(L(t[3].length ? 'فريق ' + t[0] : t[0], t[3].length ? t[1] + "'s team" : t[1])) + '</b><span>' + esc(t[3].map(x => L(x[0], x[1])).join(' · ') || L('مستشارة مبيعات', 'Sales advisor')) + '</span></div>').join('') +
+  $('allList').innerHTML = T.map(t => '<div class="tm"><b>' + esc(t[3].length ? L('فريق ' + t[0], t[1] + "'s team") : L(t[0], t[1])) + '</b><span>' + esc(t[3].map(x => L(x[0], x[1])).join(' · ') || L('مستشارة مبيعات', 'Sales advisor')) + '</span></div>').join('') +
     '<div class="tm"><b>' + esc(L('التسويق — ' + M[0], 'Marketing — ' + M[1])) + '</b><span>' + esc(M[2].map(x => L(x[0], x[1])).join(' · ')) + '</span></div>';
 }
 function renderReviews() {
@@ -458,14 +530,24 @@ function renderLinks() {
     [BIB.maps, 'pin', L(BIB.address[0], BIB.address[1]), '', 'اللوكيشن']
   ].filter(r => r[0]);
   $('links').innerHTML = rows.map(r => '<a href="' + esc(r[0]) + '" data-k="' + r[4] + '">' + svg(r[1]) + '<span class="t">' + esc(r[2]) + '</span><span class="n">' + r[3] + '</span></a>').join('') +
-    (BIB.maps ? '' : '<div style="min-height:58px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)" class="links-x">' + svg('pin').replace('<svg', '<svg style="width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.5"') + '<span>' + esc(L(BIB.address[0], BIB.address[1])) + '</span></div>') +
+    (BIB.maps ? '' : '<div style="min-height:58px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)">' + svg('pin', ICO_ST) + '<span>' + esc(L(BIB.address[0], BIB.address[1])) + '</span></div>') +
     '<button type="button" id="saveBtn" data-k="حفظ الرقم">' + svg('save') + '<span class="t">' + L('احفظ رقم BiB على موبايلك', 'Save BiB to your contacts') + '</span></button>';
   $('saveBtn').onclick = saveContact;
 }
 function renderAdvisors() {
-  $('advList').innerHTML = BIB.advisors.map(a => '<a class="adv card" data-k="مستشار: ' + esc(a[1]) + '" href="' + esc(wa(a[0], L('أهلاً أستاذة ', 'Hello ') + L(a[1], a[2]) + L('، عايز استشارة عقارية', ', I would like real estate advice') + srcLine())) + '"><div class="av">' + esc(L(a[1], a[2]).charAt(0)) + '</div><span><b>' + esc(L(a[1], a[2])) + '</b><small>' + esc(L(a[3], a[4])) + '</small></span>' + svg('chat').replace('<svg', '<svg style="width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.5"') + '</a>').join('');
+  $('advList').innerHTML = BIB.advisors.map(a => '<a class="adv card" data-k="مستشار: ' + esc(a[1]) + '" href="' + esc(wa(a[0], L('أهلاً أستاذة ', 'Hello ') + L(a[1], a[2]) + L('، عايز استشارة عقارية', ', I would like real estate advice') + srcLine())) + '"><div class="av">' + esc(L(a[1], a[2]).charAt(0)) + '</div><span><b>' + esc(L(a[1], a[2])) + '</b><small>' + esc(L(a[3], a[4])) + '</small></span>' + svg('chat', ICO_ST) + '</a>').join('');
 }
-function renderAll() { renderStatic(); renderStats(false); renderUnits(); renderDepts(); calc(); renderDays(); renderTeam(); renderReviews(); renderLinks(); renderAdvisors(); }
+function renderAll() { renderStatic(); renderStats(!animated); renderUnits(); renderDepts(); calc(); renderDays(); renderTeam(); renderReviews(); renderLinks(); renderAdvisors(); }
+
+/* ---------- السحب بالماوس للأقسام اللي بتتحرك بالعرض ---------- */
+document.querySelectorAll('.hscroll').forEach(box => {
+  let down = false, x0 = 0, s0 = 0, moved = false;
+  box.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; down = true; moved = false; x0 = e.clientX; s0 = box.scrollLeft; });
+  window.addEventListener('pointermove', e => { if (!down) return; const dx = e.clientX - x0; if (Math.abs(dx) > 5) { moved = true; box.classList.add('drag'); } box.scrollLeft = s0 - dx; });
+  window.addEventListener('pointerup', () => { if (!down) return; down = false; setTimeout(() => box.classList.remove('drag'), 0); });
+  box.addEventListener('click', e => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+  box.addEventListener('wheel', e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && box.scrollWidth > box.clientWidth) { const max = box.scrollWidth - box.clientWidth, sl = Math.abs(box.scrollLeft); if ((e.deltaY > 0 && sl < max - 2) || (e.deltaY < 0 && sl > 2)) { e.preventDefault(); box.scrollLeft += e.deltaY * (en ? 1 : -1); } } }, { passive: false });
+});
 
 /* ---------- حفظ جهة الاتصال ---------- */
 function saveContact() {
@@ -478,6 +560,115 @@ function saveContact() {
   } catch (e) { toast(L('مش متاح هنا', 'Not available here')); }
 }
 
+/* ---------- لوحة نور ---------- */
+let pin = '';
+try { pin = sessionStorage.getItem('bib_pin') || ''; } catch (e) {}
+let editU = '', editR = '', newImg = '';
+const msg = t => { $('adMsg').textContent = t || ''; };
+async function api(body) {
+  if (!BIB.api) throw new Error('لسه لينك السكريبت مش متحط في الصفحة');
+  const r = await fetch(BIB.api, { method: 'POST', body: JSON.stringify(Object.assign({ pin: pin }, body)) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.err === 'pin' ? 'الرقم السري غلط' : (j.err || 'حصلت مشكلة'));
+  if (j.data) applyData(j.data);
+  return j;
+}
+function openAdmin() {
+  $('admin').hidden = false; document.body.style.overflow = 'hidden';
+  $('adLogin').hidden = !!pin; $('adBody').hidden = !pin;
+  if (pin) renderAdmin(); else setTimeout(() => $('adPin').focus(), 50);
+}
+function closeAdmin() {
+  $('admin').hidden = true; document.body.style.overflow = '';
+  if (location.hash === '#admin') history.replaceState(null, '', location.pathname + location.search);
+}
+function renderAdmin() {
+  const d = cache || { units: [], reviews: [], stats: {} };
+  $('uList').innerHTML = d.units.length ? d.units.map(u => '<div class="ad-item card"><div class="th" style="background-image:url(\'' + esc(img(u.img)) + '\')"></div><div class="tx"><b>' + esc(u.name) + '</b><small>' + esc(u.loc) + ' · ' + esc(u.price) + '</small></div>' +
+    '<button class="sbtn" type="button" data-e="' + esc(u.id) + '">تعديل</button><button class="sbtn warn" type="button" data-x="' + esc(u.id) + '">حذف</button></div>').join('') : '<p class="note" style="padding:0">لسه مفيش وحدات، ضيفي أول وحدة من فوق.</p>';
+  $('rList').innerHTML = d.reviews.length ? d.reviews.map(r => '<div class="ad-item card"><div class="tx"><b>' + esc(r.name) + '</b><small>' + esc(r.text) + '</small></div>' +
+    '<button class="sbtn" type="button" data-e="' + esc(r.id) + '">تعديل</button><button class="sbtn warn" type="button" data-x="' + esc(r.id) + '">حذف</button></div>').join('') : '<p class="note" style="padding:0">لسه مفيش آراء. ضيفي آراء حقيقية من عملاء بإذنهم.</p>';
+  const st = d.stats || {};
+  $('sYears').value = st.years != null ? st.years : BIB.stats[0][1];
+  $('sSold').value = st.sold != null ? st.sold : BIB.stats[1][1];
+  $('sClients').value = st.clients != null ? st.clients : BIB.stats[2][1];
+  wireList('uList', d.units, fillUnit, 'delUnit');
+  wireList('rList', d.reviews, fillReview, 'delReview');
+}
+function wireList(id, arr, fill, delAction) {
+  $(id).querySelectorAll('[data-e]').forEach(b => b.onclick = () => { fill(arr.find(x => x.id === b.dataset.e)); window.scrollTo(0, 0); $('admin').scrollTo({ top: 0, behavior: 'smooth' }); });
+  $(id).querySelectorAll('[data-x]').forEach(b => b.onclick = async () => {
+    if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'متأكدة؟'; setTimeout(() => { b.dataset.sure = ''; b.textContent = 'حذف'; }, 3000); return; }
+    b.disabled = true; msg('بيتمسح...');
+    try { await api({ a: delAction, id: b.dataset.x }); msg('اتمسح ✓'); } catch (e) { msg(e.message); b.disabled = false; }
+  });
+}
+function fillUnit(u) {
+  editU = u ? u.id : ''; newImg = u ? u.img : '';
+  $('uTitle').textContent = u ? 'تعديل الوحدة' : 'وحدة جديدة';
+  $('uName').value = u ? u.name : ''; $('uLoc').value = u ? u.loc : ''; $('uPrice').value = u ? u.price : ''; $('uBadge').value = u ? u.badge : '';
+  const p = img(newImg);
+  $('uPrev').style.backgroundImage = p ? 'url("' + p + '")' : ''; $('uPrev').textContent = p ? '' : 'اضغطي هنا لصورة الوحدة';
+}
+function fillReview(r) {
+  editR = r ? r.id : '';
+  $('rTitle').textContent = r ? 'تعديل الرأي' : 'رأي جديد';
+  $('rName').value = r ? r.name : ''; $('rUnit').value = r ? r.unit : ''; $('rText').value = r ? r.text : '';
+}
+function shrink(file) {
+  return new Promise((res, rej) => {
+    const im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, 1400 / Math.max(im.width, im.height));
+      const c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(im.src);
+      res(c.toDataURL('image/jpeg', 0.82));
+    };
+    im.onerror = rej; im.src = URL.createObjectURL(file);
+  });
+}
+$('adLogin').onsubmit = async e => {
+  e.preventDefault(); pin = $('adPin').value.trim(); msg('بيتأكد...');
+  try {
+    await api({ a: 'auth' });
+    try { sessionStorage.setItem('bib_pin', pin); } catch (x) {}
+    msg('أهلاً يا نور ✓'); $('adLogin').hidden = true; $('adBody').hidden = false; renderAdmin();
+  } catch (x) { pin = ''; msg(x.message); }
+};
+$('adTabs').querySelectorAll('button').forEach(b => b.onclick = () => {
+  $('adTabs').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  $('adU').hidden = b.dataset.t !== 'u'; $('adR').hidden = b.dataset.t !== 'r'; $('adS').hidden = b.dataset.t !== 's';
+});
+$('uFile').onchange = async () => {
+  const f = $('uFile').files[0]; if (!f) return;
+  msg('الصورة بتترفع...');
+  try {
+    const dataUrl = await shrink(f);
+    $('uPrev').style.backgroundImage = 'url("' + dataUrl + '")'; $('uPrev').textContent = '';
+    const j = await api({ a: 'upload', mime: 'image/jpeg', data: dataUrl.split(',')[1] });
+    newImg = j.url; msg('الصورة اترفعت ✓ دوسي حفظ');
+  } catch (x) { msg(x.message || 'الصورة ماترفعتش'); }
+  $('uFile').value = '';
+};
+$('uForm').onsubmit = async e => {
+  e.preventDefault(); msg('بيتحفظ...');
+  try { await api({ a: 'saveUnit', id: editU, name: $('uName').value, loc: $('uLoc').value, price: $('uPrice').value, badge: $('uBadge').value, img: newImg }); fillUnit(null); msg('اتحفظت ✓ وظهرت في الصفحة'); } catch (x) { msg(x.message); }
+};
+$('uNew').onclick = () => { fillUnit(null); msg(''); };
+$('rForm').onsubmit = async e => {
+  e.preventDefault(); msg('بيتحفظ...');
+  try { await api({ a: 'saveReview', id: editR, name: $('rName').value, unit: $('rUnit').value, text: $('rText').value }); fillReview(null); msg('اتحفظ ✓'); } catch (x) { msg(x.message); }
+};
+$('rNew').onclick = () => { fillReview(null); msg(''); };
+$('adS').onsubmit = async e => {
+  e.preventDefault(); msg('بيتحفظ...');
+  try { await api({ a: 'saveStats', stats: { years: num($('sYears').value), sold: num($('sSold').value), clients: num($('sClients').value) } }); msg('الأرقام اتحفظت ✓'); } catch (x) { msg(x.message); }
+};
+$('adX').onclick = closeAdmin;
+const checkHash = () => { if (location.hash === '#admin') openAdmin(); };
+window.addEventListener('hashchange', checkHash);
+
 /* ---------- الأحداث ---------- */
 const applyTheme = d => {
   document.documentElement.dataset.theme = d ? 'dark' : 'light';
@@ -487,7 +678,7 @@ let dark = store.get('bib_theme') ? store.get('bib_theme') === 'dark' : (window.
 applyTheme(dark);
 $('themeBtn').onclick = () => { dark = !dark; applyTheme(dark); store.set('bib_theme', dark ? 'dark' : 'light'); };
 $('langBtn').onclick = () => { en = !en; store.set('bib_lang', en ? 'en' : 'ar'); renderAll(); };
-document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { tab = b.dataset.tab; renderDepts(); });
+document.querySelectorAll('#depts .seg button').forEach(b => b.onclick = () => { tab = b.dataset.tab; renderDepts(); });
 ['cPrice', 'cDown', 'cYears'].forEach(id => $(id).addEventListener('input', calc));
 $('cPrice').addEventListener('blur', () => { const n = num($('cPrice').value); $('cPrice').value = n ? fmt(n) : ''; calc(); });
 $('calcSend').onclick = () => {
@@ -504,20 +695,19 @@ $('sellForm').onsubmit = e => {
 $('bookForm').onsubmit = e => {
   e.preventDefault();
   if (slot === '') { toast(L('اختار الميعاد الأول', 'Pick a time first')); return; }
-  const s = renderDays.S[Number(slot)];
+  const s = SLOTS[Number(slot)];
   location.href = wa(BIB.whatsapp, L('📅 حجز معاينة', '📅 Viewing request') + '\n' + L('الاسم: ', 'Name: ') + $('bName').value + '\n' + L('عايز أعاين: ', 'To see: ') + ($('bWhat').value || '—') + '\n' +
     L('اليوم: ', 'Day: ') + $('bDay').options[$('bDay').selectedIndex].text + '\n' + L('الميعاد: ', 'Time: ') + L(s[0], s[1]) + srcLine());
 };
 $('advBtn').onclick = () => $('sheet').classList.add('show');
 $('sheetX').onclick = () => $('sheet').classList.remove('show');
 $('sheet').onclick = e => { if (e.target === $('sheet')) $('sheet').classList.remove('show'); };
-document.addEventListener('keydown', e => { if (e.key === 'Escape') $('sheet').classList.remove('show'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('sheet').classList.remove('show'); if (!$('admin').hidden) closeAdmin(); } });
 
 /* ---------- البداية ---------- */
 renderAll();
-renderStats(true);
-const statObs = new IntersectionObserver(es => es.forEach(en_ => {
-  if (!en_.isIntersecting) return; statObs.disconnect();
+const statObs = new IntersectionObserver(es => es.forEach(x => {
+  if (!x.isIntersecting) return; statObs.disconnect(); animated = true;
   const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.stat b').forEach(b => {
     const to = Number(b.dataset.to), pre = b.dataset.pre, t0 = performance.now(), d = reduce ? 1 : 1400;
@@ -528,7 +718,9 @@ const statObs = new IntersectionObserver(es => es.forEach(en_ => {
 statObs.observe($('stats'));
 const revObs = new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting) { x.target.classList.add('in'); revObs.unobserve(x.target); } }), { threshold: .12 });
 document.querySelectorAll('.sec').forEach(s => { s.classList.add('reveal'); revObs.observe(s); });
-loadSheet();
+checkHash();
+loadData();
+
 }
 </script>
 </body>
