@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BiB Broker</title>
+<meta name="description" content="BiB Broker — مكتب عقاري في زهراء المعادي. سكني وتجاري، برايمري وريسيل.">
+<meta name="theme-color" content="#14120F">
+<meta property="og:title" content="BiB Broker">
+<meta property="og:description" content="أهلاً بيك في BiB Broker — سكني وتجاري، برايمري وريسيل.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: هادي وفخم، مكتب استشارات مش محل
+   IDEA: صفحات مجلة عقارية مطبوعة
+   PICTURE: الأرقام الكبيرة وكروت الوحدات
+   COLOUR and TYPE: عاجي وأسود فحمي ودهبي، Amiri للعناوين و IBM Plex للنص
+   LAYOUT: عمود واحد للموبايل، وبيتوسّع لحد 720 على الشاشات الكبيرة */
+:root{--bg:#F4EFE6;--surface:#FBF8F2;--ink:#14120F;--body:#3E382F;--muted:#5F574B;--line:#E2D9CA;--gold:#B8925A;--goldT:#7E5F2F;--track:#EAE2D4;--btn:#14120F;--btnInk:#F4EFE6;--shadow:rgba(20,18,15,.10)}
+:root[data-theme=dark]{--bg:#0F0E0C;--surface:#1A1815;--ink:#F2ECE1;--body:#CFC6B6;--muted:#A79E8F;--line:#2C2822;--gold:#C9A46A;--goldT:#C9A46A;--track:#1D1B17;--btn:#C9A46A;--btnInk:#14120F;--shadow:rgba(0,0,0,.4)}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'IBM Plex Sans Arabic',system-ui,sans-serif;overflow-x:clip;transition:background .3s,color .3s}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:720px;margin:0 auto}
+.serif{font-family:'Amiri',serif}
+.pad{padding-inline:24px}
+.top{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:baseline;gap:8px}
+.logo b{font:700 30px/1 'Amiri',serif;direction:ltr;letter-spacing:-.5px}
+.logo span{font:400 16px 'Amiri',serif;color:var(--gold);letter-spacing:1.5px}
+.tools{display:flex;gap:8px}
+.ib{width:44px;height:44px;border-radius:22px;border:1px solid var(--line);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 12px;min-width:44px;width:auto;font-size:13px}
+.ib svg{width:18px;height:18px}
+.hero{padding:44px 24px 48px;display:flex;flex-direction:column;gap:22px}
+.tag{font-size:13px;color:var(--goldT);font-weight:500;letter-spacing:.5px}
+h1{margin:0;font:400 clamp(42px,12vw,56px)/1.15 'Amiri',serif;text-wrap:balance}
+h1 strong{font-weight:700}h1 em{font-style:normal;color:var(--gold)}
+.rule{width:56px;height:1px;background:var(--gold)}
+.lead{margin:0;font-size:16px;line-height:1.85;color:var(--body)}
+.btn{min-height:54px;border-radius:27px;border:0;background:var(--btn);color:var(--btnInk);font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;padding:0 16px;width:100%;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.row2{display:flex;gap:10px}.row2>*{flex:1}
+.stats{padding:0 24px}
+.stat{display:flex;align-items:baseline;justify-content:space-between;padding:20px 0;border-top:1px solid var(--line)}
+.stat:first-child{border-top-color:var(--ink)}.stat:last-child{border-bottom:1px solid var(--line)}
+.stat b{font:400 44px/1 'Amiri',serif;direction:ltr}
+.stat span{font-size:14px;color:var(--muted)}
+.sec{padding:64px 0 0;display:flex;flex-direction:column;gap:20px}
+.sh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 24px}
+.sh h2{margin:0;font:700 30px/1.2 'Amiri',serif}
+.sh small{font-size:13px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px}
+.hscroll{display:flex;gap:12px;overflow-x:auto;padding:4px 24px 10px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+.unit{flex:0 0 78%;max-width:300px;scroll-snap-align:start;overflow:hidden;display:flex;flex-direction:column}
+.unit .ph{aspect-ratio:4/3;background:linear-gradient(160deg,#2a251e,#14120F);position:relative;display:flex;align-items:flex-end;padding:12px}
+.unit .ph::after{content:"BiB";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font:700 44px 'Amiri',serif;color:rgba(201,164,106,.18)}
+.unit .ph img{z-index:1;position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.badge{position:relative;z-index:2;font-size:12px;background:rgba(20,18,15,.78);color:#C9A46A;border:1px solid rgba(201,164,106,.5);padding:4px 10px;border-radius:14px}
+.unit .in{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.unit h3{margin:0;font:700 20px/1.3 'Amiri',serif}
+.unit .meta{font-size:13px;color:var(--muted)}
+.unit .price{font-size:16px;font-weight:600;color:var(--goldT);margin-top:auto;white-space:nowrap}
+.unit a.ask{margin-top:10px;min-height:44px;border-radius:22px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px}
+.note{font-size:12px;color:var(--muted);padding:0 24px}
+.seg{display:flex;background:var(--track);border-radius:28px;padding:4px;margin:0 24px}
+.seg button{flex:1;min-height:44px;border-radius:24px;border:0;background:transparent;font-size:14px;cursor:pointer}
+.seg button.on{background:var(--btn);color:var(--btnInk)}
+.dept{margin:0 24px;padding:24px;display:flex;flex-direction:column;gap:12px}
+.dept.noir{background:#14120F;color:#F2ECE1;border-color:#3A3227}
+.dept h3{margin:0;font:700 26px/1.2 'Amiri',serif}
+.dept p{margin:0;font-size:14px;line-height:1.75;color:var(--muted)}
+.dept.noir p{color:#B5AC9C}
+.ico{width:28px;height:28px;stroke:var(--gold);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.calc{margin:0 24px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;color:var(--muted)}
+.field input,.field select{min-height:48px;border-radius:14px;border:1px solid var(--line);background:var(--bg);padding:0 14px;font-size:16px;width:100%}
+.field input:focus,.field select:focus,.btn:focus-visible,.ib:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+input[type=range]{accent-color:var(--gold);min-height:32px;padding:0;border:0;background:transparent}
+.res{border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:4px}
+.res small{font-size:13px;color:var(--muted)}
+.res b{font:700 clamp(34px,10vw,44px)/1.1 'Amiri',serif;color:var(--goldT)}
+.res span{font-size:13px;color:var(--muted)}
+.sell{margin:0 24px;border-radius:24px;background:#14120F;color:#F2ECE1;padding:28px 22px;position:relative;overflow:hidden;border:1px solid #C9A46A}
+.sell::before{content:"";position:absolute;inset:10px;border:1px solid rgba(201,164,106,.25);border-radius:18px;pointer-events:none}
+.sell .k{font-size:12px;color:#C9A46A;letter-spacing:.5px}
+.sell h2{margin:10px 0 8px;font:700 34px/1.2 'Amiri',serif;text-wrap:balance}
+.sell h2 em{font-style:normal;color:#C9A46A}
+.sell p{margin:0 0 20px;color:#CFC6B6;font-size:15px;line-height:1.8}
+.sell .field label{color:#B5AC9C}
+.sell .field input,.sell .field select{background:#1E1B17;border-color:#3A3227;color:#F2ECE1}
+.sell .btn{background:#C9A46A;color:#14120F;position:relative}
+.sell form{display:none;flex-direction:column;gap:12px;position:relative}
+.sell.open form{display:flex}.sell.open .openBtn{display:none}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.book{margin:0 24px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.slots{display:flex;flex-wrap:wrap;gap:8px}
+.slots button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:transparent;cursor:pointer;font-size:14px}
+.slots button.on{background:var(--btn);color:var(--btnInk);border-color:var(--btn)}
+.owner{display:flex;align-items:center;gap:16px;padding:0 24px}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Amiri',serif;flex:none}
+.owner .av{width:64px;height:64px;background:#14120F;color:#C9A46A;border:1px solid #C9A46A;font-size:22px}
+.owner b{display:block;font:700 22px/1.3 'Amiri',serif}
+.owner span{font-size:13px;color:var(--muted)}
+.lead-c{flex:0 0 150px;scroll-snap-align:start;padding:18px;display:flex;flex-direction:column;gap:8px}
+.lead-c .av{width:44px;height:44px;border:1px solid var(--gold);color:var(--goldT);font-size:18px}
+.lead-c b{font-size:15px}.lead-c span{font-size:12px;color:var(--muted)}
+details.all{margin:0 24px;border-bottom:1px solid var(--line)}
+details.all summary{min-height:48px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;color:var(--goldT);font-size:14px;font-weight:500;list-style:none}
+details.all summary::-webkit-details-marker{display:none}
+.tm{padding:12px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.tm b{font-size:14px}.tm span{font-size:13px;color:var(--muted)}
+.rev{flex:0 0 82%;max-width:320px;scroll-snap-align:start;padding:22px;display:flex;flex-direction:column;gap:12px}
+.rev q{font:400 19px/1.6 'Amiri',serif;quotes:"«" "»"}
+.rev span{font-size:13px;color:var(--muted)}
+.links{padding:0 24px;display:flex;flex-direction:column}
+.links a,.links button{min-height:58px;display:flex;align-items:center;gap:14px;border:0;border-bottom:1px solid var(--line);background:transparent;cursor:pointer;width:100%;text-align:start;font-size:15px;padding:0}
+.links svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.links .t{flex:1}.links .n{font-size:13px;color:var(--muted);direction:ltr}
+.credit{padding:56px 24px 120px;text-align:center;font-size:12px;color:var(--muted)}
+.credit a{color:var(--body)}
+.fab{position:fixed;bottom:22px;inset-inline-end:20px;width:60px;height:60px;border-radius:30px;background:#14120F;border:1px solid #C9A46A;color:#C9A46A;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(20,18,15,.35);z-index:20;animation:pulse 3s ease-in-out infinite}
+.fab svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+@keyframes pulse{0%,100%{box-shadow:0 10px 30px rgba(20,18,15,.35),0 0 0 0 rgba(201,164,106,.45)}50%{box-shadow:0 10px 30px rgba(20,18,15,.35),0 0 0 10px rgba(201,164,106,0)}}
+.sheet{position:fixed;inset:0;background:rgba(10,9,8,.55);display:none;align-items:flex-end;justify-content:center;z-index:30}
+.sheet.show{display:flex}
+.sheet .box{width:100%;max-width:520px;background:var(--bg);border-radius:26px 26px 0 0;padding:24px 20px 32px;display:flex;flex-direction:column;gap:12px;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.adv{display:flex;align-items:center;gap:14px;padding:14px 16px;min-height:64px}
+.adv .av{width:44px;height:44px;border:1px solid var(--gold);color:var(--goldT);font-size:18px}
+.adv span{flex:1;display:flex;flex-direction:column}.adv small{font-size:12px;color:var(--muted)}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:#14120F;color:#F2ECE1;border:1px solid #C9A46A;padding:10px 18px;border-radius:20px;font-size:14px;z-index:40;display:none}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.fab{animation:none}html{scroll-behavior:auto}}
+@media (min-width:760px){.unit{flex-basis:300px}}
+</style>
+<script src="/k.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="logo"><b>BiB</b><span data-brand>Broker</span></div>
+  <div class="tools">
+    <button class="ib" id="themeBtn" type="button" aria-label="تغيير السطوع" data-k="السطوع">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path id="themeIco" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <button class="ib" id="langBtn" type="button" data-k="اللغة">EN</button>
+  </div>
+</header>
+
+<section class="hero">
+  <span class="tag" data-en="Real estate office · Zahraa El Maadi">مكتب عقاري · زهراء المعادي</span>
+  <h1 id="h1"></h1>
+  <div class="rule"></div>
+  <p class="lead" data-en="Ten years of finding every client the exact right unit — residential or commercial, primary or resale.">عشر سنين بنختار فيها لكل عميل الوحدة اللي تناسبه بالظبط، سكني أو تجاري، برايمري أو ريسيل.</p>
+  <div class="row2">
+    <button class="btn" type="button" id="advBtn" data-k="كلّم مستشار" data-en="Talk to an advisor">كلّم مستشار</button>
+    <a class="btn ghost" href="#book" data-k="احجز معاينة" data-en="Book a viewing">احجز معاينة</a>
+  </div>
+</section>
+
+<section class="stats" id="stats"></section>
+
+<section class="sec" id="units">
+  <div class="sh"><h2 data-en="Featured units">وحدات مميزة</h2><small id="unitsCount"></small></div>
+  <div class="hscroll" id="unitList"></div>
+  <p class="note" id="unitsNote" data-en="Sample units — the office updates this list from its sheet.">وحدات للعرض كمثال، والمكتب بيحدّث القايمة من الشيت.</p>
+</section>
+
+<section class="sec" id="depts">
+  <div class="sh"><h2 data-en="Departments">الأقسام</h2></div>
+  <div class="seg" role="tablist">
+    <button type="button" class="on" data-tab="p" data-en="Primary">برايمري</button>
+    <button type="button" data-tab="r" data-en="Resale">ريسيل</button>
+  </div>
+  <div class="dept card">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg>
+    <h3 data-en="Residential">سكني</h3><p id="resD"></p>
+  </div>
+  <div class="dept card noir">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="stroke:#C9A46A"><path d="M3 21h18"/><path d="M5 21V5l7-2v18"/><path d="M12 9h7v12"/></svg>
+    <h3 data-en="Commercial">تجاري</h3><p id="comD"></p>
+  </div>
+</section>
+
+<section class="sec" id="calc">
+  <div class="sh"><h2 data-en="Installment calculator">احسب قسطك</h2></div>
+  <div class="calc card">
+    <div class="field"><label for="cPrice" data-en="Unit price (EGP)">سعر الوحدة بالجنيه</label><input id="cPrice" inputmode="numeric" value="3,000,000"></div>
+    <div class="field"><label for="cDown"><span data-en="Down payment">المقدم</span> <b id="cDownV">10%</b></label><input id="cDown" type="range" min="0" max="50" step="5" value="10"></div>
+    <div class="field"><label for="cYears"><span data-en="Years">عدد السنين</span> <b id="cYearsV">7</b></label><input id="cYears" type="range" min="1" max="12" step="1" value="7"></div>
+    <div class="res">
+      <small data-en="Monthly installment">القسط الشهري</small>
+      <b id="cMonthly">0</b>
+      <span id="cSummary"></span>
+    </div>
+    <button class="btn" type="button" id="calcSend" data-k="وحدات في حدود القسط" data-en="Send me units in this range">ابعتلي وحدات في الحدود دي</button>
+  </div>
+  <p class="note" data-en="An estimate with no interest; each developer has its own plan.">حساب تقريبي من غير فوايد، ولكل مطوّر نظامه.</p>
+</section>
+
+<section class="sec" id="sell">
+  <div class="sell" id="sellBox">
+    <span class="k" data-en="For owners">لأصحاب الوحدات</span>
+    <h2 id="sellH"></h2>
+    <p data-en="Tell us about your unit in a minute. We price it fairly, market it to our buyers and handle everything until the sale.">قولّنا على وحدتك في دقيقة. بنسعّرها صح، ونعرضها على المشترين اللي معانا، ونخلّص كل حاجة لحد البيع.</p>
+    <button class="btn openBtn" type="button" id="sellOpen" data-k="عايز أبيع وحدتي" data-en="List my unit">اعرض وحدتي</button>
+    <form id="sellForm">
+      <div class="grid2">
+        <div class="field"><label for="sType" data-en="Type">النوع</label>
+          <select id="sType"><option data-en="Apartment">شقة</option><option data-en="Duplex">دوبلكس</option><option data-en="Villa">فيلا</option><option data-en="Shop">محل</option><option data-en="Office">مكتب</option><option data-en="Clinic">عيادة</option></select></div>
+        <div class="field"><label for="sArea" data-en="Area (m²)">المساحة م²</label><input id="sArea" inputmode="numeric"></div>
+      </div>
+      <div class="field"><label for="sLoc" data-en="Location">المكان</label><input id="sLoc"></div>
+      <div class="field"><label for="sPrice" data-en="Expected price">السعر المتوقع</label><input id="sPrice" inputmode="numeric"></div>
+      <div class="field"><label for="sName" data-en="Your name">اسمك</label><input id="sName" autocomplete="name"></div>
+      <button class="btn" type="submit" data-k="ابعت وحدة للبيع" data-en="Send to BiB">ابعتها لـ BiB</button>
+    </form>
+  </div>
+</section>
+
+<section class="sec" id="book">
+  <div class="sh"><h2 data-en="Book a viewing">احجز معاينة</h2></div>
+  <form class="book card" id="bookForm">
+    <div class="field"><label for="bName" data-en="Your name">اسمك</label><input id="bName" autocomplete="name" required></div>
+    <div class="field"><label for="bWhat" data-en="What do you want to see?">عايز تعاين إيه؟</label><input id="bWhat" data-en-ph="e.g. apartment in Zahraa El Maadi" placeholder="مثلاً: شقة في زهراء المعادي"></div>
+    <div class="field"><label for="bDay" data-en="Day">اليوم</label><select id="bDay"></select></div>
+    <div class="field"><span style="font-size:13px;color:var(--muted)" data-en="Time">الميعاد</span>
+      <div class="slots" id="slots"></div></div>
+    <button class="btn" type="submit" data-k="حجز معاينة" data-en="Confirm on WhatsApp">أكّد الحجز على واتساب</button>
+  </form>
+</section>
+
+<section class="sec" id="team">
+  <div class="sh"><h2 data-en="The team">الفريق</h2><small id="teamCount"></small></div>
+  <div class="owner"><div class="av" id="ownerI"></div><div><b id="ownerN"></b><span id="ownerR"></span></div></div>
+  <div class="hscroll" id="leads"></div>
+  <details class="all"><summary><span id="allT"></span><span aria-hidden="true">+</span></summary><div id="allList"></div></details>
+</section>
+
+<section class="sec" id="reviews" hidden>
+  <div class="sh"><h2 data-en="Our clients say">عملاءنا بيقولوا</h2></div>
+  <div class="hscroll" id="revList"></div>
+</section>
+
+<section class="sec" id="contact">
+  <div class="sh"><h2 data-en="Contact">تواصل</h2></div>
+  <div class="links" id="links"></div>
+</section>
+
+<footer class="credit">
+  <span><span data-en="Smart page by">صفحة ذكية من تصميم</span> <a href="https://t.me/AswanyAssist_bot">Kareem Elaswany</a></span>
+</footer>
+</div>
+
+<a class="fab" id="fab" href="#" aria-label="واتساب BiB" data-k="الزرار العايم">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+</a>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetT">
+  <div class="box">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <b class="serif" style="font-size:22px" id="sheetT" data-en="Choose an advisor">اختار المستشار</b>
+      <button class="ib" type="button" id="sheetX" aria-label="إغلاق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div id="advList" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+{
+/* ================= بيانات BiB (أي تعديل هنا بس) ================= */
+const BIB = {
+  page: 'https://nfc341.github.io/bib/',
+  whatsapp: '201010954461',              // نور طارق — الرقم الأساسي للصفحة
+  telegram: 'https://t.me/+201010954461',
+  tiktok: '',                            // لينك تيك توك
+  facebook: '',                          // لينك صفحة فيسبوك
+  groups: '',                            // لينك جروب الفيس
+  maps: '',                              // لينك اللوكيشن على خرايط جوجل
+  address: ['زهراء المعادي، القاهرة', 'Zahraa El Maadi, Cairo'],
+  sheetId: '',                           // ID شيت الوحدات والآراء (نور بتتحكم فيه)
+  stats: [[10, '', 'سنين في السوق', 'Years in the market'], [850, '+', 'وحدة اتباعت', 'Units sold'], [1200, '+', 'عميل', 'Clients']],
+  advisors: [
+    ['201023145333', 'شيماء مجدي', 'Shaimaa Magdy', 'مديرة المكتب', 'Office manager'],
+    ['201010954461', 'نور طارق', 'Nour Tarek', 'مديرة التسويق', 'Marketing manager']
+  ],
+  owner: ['محمد الشاذلي', 'Mohamed El-Shazly', 'المؤسس · ومعاه شيماء مجدي، مديرة المكتب', 'Founder · with Shaimaa Magdy, office manager'],
+  teams: [
+    ['آيات مجدي', 'Ayat Magdy', 'f', [['عبدالرحمن طارق', 'Abdelrahman Tarek'], ['زياد مجدي', 'Ziad Magdy']]],
+    ['علي طارق', 'Ali Tarek', 'm', [['محمد إبراهيم', 'Mohamed Ibrahim']]],
+    ['محمد أحمد', 'Mohamed Ahmed', 'm', [['فاطمة', 'Fatma']]],
+    ['حبيبة', 'Habiba', 'f', [['هبة أحمد', 'Heba Ahmed'], ['دنيا محمود', 'Donia Mahmoud']]],
+    ['منة محمد', 'Menna Mohamed', 'f', []]
+  ],
+  marketing: ['نور طارق', 'Nour Tarek', [['أميمة', 'Omaima'], ['عليا', 'Alia'], ['سجى', 'Saga']]],
+  sampleUnits: [
+    ['شقة 165 م²', 'زهراء المعادي', '3,250,000 ج', '', 'ريسيل'],
+    ['دوبلكس 240 م²', 'التجمع الخامس', 'مقدم 10% وتقسيط 8 سنين', '', 'برايمري'],
+    ['محل 48 م²', 'المعادي', '2,100,000 ج', '', 'تجاري']
+  ]
+};
+/* ================================================================= */
+
+const SRC_NAMES = { fb: ['إعلان فيسبوك', 'Facebook ad'], tt: ['إعلان تيك توك', 'TikTok ad'], ig: ['إنستجرام', 'Instagram'], g: ['جروبات الفيس', 'Facebook groups'], y: ['يافطة', 'Sign'], q: ['كيو آر', 'QR'], t: ['تاج NFC', 'NFC tag'], w: ['واتساب', 'WhatsApp'] };
+const $ = id => document.getElementById(id);
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+let src = new URLSearchParams(location.search).get('s') || '';
+try { if (src) sessionStorage.setItem('bib_src', src); else src = sessionStorage.getItem('bib_src') || ''; } catch (e) {}
+let en = store.get('bib_lang') === 'en';
+let tab = 'p', slot = '';
+const L = (a, b) => en ? b : a;
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const num = s => Number(String(s).replace(/[^\d.]/g, '')) || 0;
+const wa = (phone, text) => 'https://wa.me/' + phone + '?text=' + encodeURIComponent(text);
+const srcLine = () => {
+  const n = SRC_NAMES[src];
+  return '\n\n— ' + L('من صفحة BiB', 'From the BiB page') + (n ? ' (' + L('المصدر', 'source') + ': ' + L(n[0], n[1]) + ')' : '');
+};
+const toast = t => { const el = $('toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(toast.h); toast.h = setTimeout(() => el.style.display = 'none', 2600); };
+
+const ICONS = {
+  chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  tg: '<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>',
+  tt: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  fb: '<path d="M15 3h-2.5A3.5 3.5 0 0 0 9 6.5V21"/><path d="M6 11h8"/>',
+  grp: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
+  pin: '<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+  save: '<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M19 8v6M16 11h6"/>'
+};
+const svg = k => '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICONS[k] + '</svg>';
+
+/* ---------- الوحدات والآراء من الشيت ---------- */
+let units = BIB.sampleUnits, reviews = [], fromSheet = false;
+function csv(t) {
+  const rows = []; let r = [], f = '', q = false;
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (q) { if (c === '"' && t[i + 1] === '"') { f += '"'; i++; } else if (c === '"') q = false; else f += c; }
+    else if (c === '"') q = true; else if (c === ',') { r.push(f); f = ''; }
+    else if (c === '\n') { r.push(f); rows.push(r); r = []; f = ''; } else if (c !== '\r') f += c;
+  }
+  if (f || r.length) { r.push(f); rows.push(r); }
+  return rows.slice(1).filter(x => x.some(v => v.trim()));
+}
+function img(u) {
+  u = String(u || '').trim(); if (!u) return '';
+  const m = u.match(/\/d\/([\w-]{20,})/) || u.match(/[?&]id=([\w-]{20,})/);
+  return m ? 'https://lh3.googleusercontent.com/d/' + m[1] + '=w800' : u;
+}
+function sheetUrl(name) { return 'https://docs.google.com/spreadsheets/d/' + BIB.sheetId + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(name); }
+async function loadSheet() {
+  if (!BIB.sheetId) return;
+  try {
+    const u = csv(await (await fetch(sheetUrl('units'))).text());
+    if (u.length) { units = u; fromSheet = true; renderUnits(); }
+  } catch (e) {}
+  try {
+    const r = csv(await (await fetch(sheetUrl('reviews'))).text());
+    if (r.length) { reviews = r; renderReviews(); }
+  } catch (e) {}
+}
+
+/* ---------- الرسم ---------- */
+function renderStatic() {
+  document.documentElement.lang = en ? 'en' : 'ar';
+  document.documentElement.dir = en ? 'ltr' : 'rtl';
+  document.querySelectorAll('[data-en]').forEach(el => {
+    if (el.dataset.ar == null) el.dataset.ar = el.textContent;
+    el.textContent = en ? el.dataset.en : el.dataset.ar;
+  });
+  document.querySelectorAll('[data-en-ph]').forEach(el => {
+    if (el.dataset.arPh == null) el.dataset.arPh = el.placeholder;
+    el.placeholder = en ? el.dataset.enPh : el.dataset.arPh;
+  });
+  const brand = L('Broker', 'بروكر');
+  document.querySelectorAll('[data-brand]').forEach(el => el.textContent = brand);
+  $('h1').innerHTML = L('أهلاً بيك', 'Welcome') + '<br>' + L('في', 'to') + ' <strong>BiB <em>' + brand + '</em></strong>';
+  $('sellH').innerHTML = L('عندك وحدة؟<br><em>إحنا نبيعهالك</em>', 'Have a unit?<br><em>We will sell it</em>');
+  $('langBtn').textContent = L('EN', 'ع');
+  $('themeBtn').setAttribute('aria-label', L('تغيير السطوع', 'Toggle brightness'));
+  $('fab').href = wa(BIB.whatsapp, L('أهلاً، عايز أستفسر عن وحدة', 'Hello, I would like to ask about a unit') + srcLine());
+}
+function renderStats(animate) {
+  $('stats').innerHTML = BIB.stats.map((s, i) => '<div class="stat"><b data-to="' + s[0] + '" data-pre="' + s[1] + '">' + (animate ? s[1] + '0' : s[1] + fmt(s[0])) + '</b><span>' + L(s[2], s[3]) + '</span></div>').join('');
+}
+function renderUnits() {
+  $('unitList').innerHTML = units.map(u => {
+    const p = img(u[3]);
+    const msg = L('أهلاً، عايز أستفسر عن الوحدة دي:', 'Hello, I am interested in this unit:') + '\n' + u[0] + ' — ' + u[1] + '\n' + u[2] + srcLine();
+    return '<article class="unit card"><div class="ph">' + (p ? '<img src="' + esc(p) + '" alt="' + esc(u[0]) + '" loading="lazy">' : '') +
+      (u[4] ? '<span class="badge">' + esc(u[4]) + '</span>' : '') + '</div><div class="in"><h3>' + esc(u[0]) + '</h3><span class="meta">' + esc(u[1]) + '</span>' +
+      '<span class="price">' + esc(u[2]) + '</span><a class="ask" data-k="استفسار وحدة" href="' + esc(wa(BIB.whatsapp, msg)) + '">' + L('استفسر عن الوحدة', 'Ask about this unit') + '</a></div></article>';
+  }).join('');
+  $('unitsCount').textContent = units.length + ' ' + L('وحدات', 'units');
+  $('unitsNote').hidden = fromSheet;
+}
+function renderDepts() {
+  const D = {
+    p: [['شقق ودوبلكس وفيلات من المطوّر مباشرة، بمقدمات وأنظمة سداد مختلفة.', 'Apartments, duplexes and villas straight from the developer, with flexible plans.'], ['محلات ومكاتب وعيادات في مشاريع جديدة، للاستثمار أو التشغيل.', 'Shops, offices and clinics in new projects, to invest or operate.']],
+    r: [['وحدات جاهزة أو قريبة التسليم، متفحّصة ومتسعّرة صح.', 'Ready or near-delivery units, checked and fairly priced.'], ['محلات ومكاتب شغالة أو جاهزة للتشغيل في أماكن عليها حركة.', 'Running or ready shops and offices in busy locations.']]
+  }[tab];
+  $('resD').textContent = L(D[0][0], D[0][1]); $('comD').textContent = L(D[1][0], D[1][1]);
+  document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+}
+function calc() {
+  const price = num($('cPrice').value), down = Number($('cDown').value), years = Number($('cYears').value);
+  const rest = price * (1 - down / 100), m = years ? rest / (years * 12) : 0;
+  $('cDownV').textContent = down + '%'; $('cYearsV').textContent = years;
+  $('cMonthly').textContent = fmt(m) + ' ' + L('ج', 'EGP');
+  $('cSummary').textContent = L('مقدم ', 'Down payment ') + fmt(price * down / 100) + L(' ج · على ', ' EGP · over ') + years + L(' سنين', ' years');
+  return { price, down, years, m };
+}
+function renderDays() {
+  const names = en ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : ['الأحد', 'الاتنين', 'التلات', 'الأربع', 'الخميس', 'الجمعة', 'السبت'];
+  const keep = $('bDay').value; let h = '';
+  for (let i = 1; i <= 7; i++) { const d = new Date(Date.now() + i * 864e5); const v = d.getDate() + '/' + (d.getMonth() + 1); h += '<option value="' + v + '">' + names[d.getDay()] + ' ' + v + '</option>'; }
+  $('bDay').innerHTML = h; if (keep) $('bDay').value = keep;
+  const S = [['12 الضهر', '12 PM'], ['3 العصر', '3 PM'], ['6 المغرب', '6 PM'], ['8 بالليل', '8 PM']];
+  $('slots').innerHTML = S.map((s, i) => '<button type="button" data-i="' + i + '" class="' + (slot === String(i) ? 'on' : '') + '">' + L(s[0], s[1]) + '</button>').join('');
+  $('slots').querySelectorAll('button').forEach(b => b.onclick = () => { slot = b.dataset.i; renderDays(); });
+  renderDays.S = S;
+}
+function renderTeam() {
+  const T = BIB.teams, M = BIB.marketing;
+  const total = 2 + T.reduce((a, t) => a + 1 + t[3].length, 0) + 1 + M[2].length;
+  $('teamCount').textContent = total + ' ' + L('فرد', 'people');
+  $('ownerI').textContent = L(BIB.owner[0], BIB.owner[1]).charAt(0);
+  $('ownerN').textContent = L(BIB.owner[0], BIB.owner[1]);
+  $('ownerR').textContent = L(BIB.owner[2], BIB.owner[3]);
+  const lead = (n, ne, sub) => '<div class="lead-c card"><div class="av">' + esc(L(n, ne).charAt(0)) + '</div><b>' + esc(L(n, ne)) + '</b><span>' + esc(sub) + '</span></div>';
+  $('leads').innerHTML = T.map(t => lead(t[0], t[1], t[3].length ? L((t[2] === 'f' ? 'قائدة فريق · ' : 'قائد فريق · ') + t[3].length + (t[2] === 'f' ? ' معاها' : ' معاه'), 'Team lead · ' + t[3].length) : L('مستشارة مبيعات', 'Sales advisor'))).join('') +
+    lead(M[0], M[1], L('مديرة التسويق · ', 'Marketing manager · ') + M[2].length);
+  $('allT').textContent = L('كل الفريق', 'Full team') + ' (' + total + ')';
+  $('allList').innerHTML = T.map(t => '<div class="tm"><b>' + esc(L(t[3].length ? 'فريق ' + t[0] : t[0], t[3].length ? t[1] + "'s team" : t[1])) + '</b><span>' + esc(t[3].map(x => L(x[0], x[1])).join(' · ') || L('مستشارة مبيعات', 'Sales advisor')) + '</span></div>').join('') +
+    '<div class="tm"><b>' + esc(L('التسويق — ' + M[0], 'Marketing — ' + M[1])) + '</b><span>' + esc(M[2].map(x => L(x[0], x[1])).join(' · ')) + '</span></div>';
+}
+function renderReviews() {
+  $('reviews').hidden = !reviews.length;
+  $('revList').innerHTML = reviews.map(r => '<figure class="rev card" style="margin:0"><q>' + esc(r[2]) + '</q><span>' + esc(r[0]) + (r[1] ? ' · ' + esc(r[1]) : '') + '</span></figure>').join('');
+}
+function renderLinks() {
+  const rows = [
+    [wa(BIB.whatsapp, L('أهلاً BiB', 'Hello BiB') + srcLine()), 'chat', L('واتساب', 'WhatsApp'), '0101 095 4461', 'واتساب'],
+    [BIB.telegram, 'tg', L('تليجرام', 'Telegram'), '', 'تليجرام'],
+    [BIB.tiktok, 'tt', L('تيك توك', 'TikTok'), '', 'تيك توك'],
+    [BIB.facebook, 'fb', L('صفحة فيسبوك', 'Facebook page'), '', 'فيسبوك'],
+    [BIB.groups, 'grp', L('جروبات الفيس', 'Facebook groups'), '', 'جروبات الفيس'],
+    [BIB.maps, 'pin', L(BIB.address[0], BIB.address[1]), '', 'اللوكيشن']
+  ].filter(r => r[0]);
+  $('links').innerHTML = rows.map(r => '<a href="' + esc(r[0]) + '" data-k="' + r[4] + '">' + svg(r[1]) + '<span class="t">' + esc(r[2]) + '</span><span class="n">' + r[3] + '</span></a>').join('') +
+    (BIB.maps ? '' : '<div style="min-height:58px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)" class="links-x">' + svg('pin').replace('<svg', '<svg style="width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.5"') + '<span>' + esc(L(BIB.address[0], BIB.address[1])) + '</span></div>') +
+    '<button type="button" id="saveBtn" data-k="حفظ الرقم">' + svg('save') + '<span class="t">' + L('احفظ رقم BiB على موبايلك', 'Save BiB to your contacts') + '</span></button>';
+  $('saveBtn').onclick = saveContact;
+}
+function renderAdvisors() {
+  $('advList').innerHTML = BIB.advisors.map(a => '<a class="adv card" data-k="مستشار: ' + esc(a[1]) + '" href="' + esc(wa(a[0], L('أهلاً أستاذة ', 'Hello ') + L(a[1], a[2]) + L('، عايز استشارة عقارية', ', I would like real estate advice') + srcLine())) + '"><div class="av">' + esc(L(a[1], a[2]).charAt(0)) + '</div><span><b>' + esc(L(a[1], a[2])) + '</b><small>' + esc(L(a[3], a[4])) + '</small></span>' + svg('chat').replace('<svg', '<svg style="width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.5"') + '</a>').join('');
+}
+function renderAll() { renderStatic(); renderStats(false); renderUnits(); renderDepts(); calc(); renderDays(); renderTeam(); renderReviews(); renderLinks(); renderAdvisors(); }
+
+/* ---------- حفظ جهة الاتصال ---------- */
+function saveContact() {
+  const v = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:BiB Broker', 'ORG:BiB Broker', 'TEL;TYPE=CELL:+' + BIB.whatsapp, 'ADR;TYPE=WORK:;;' + BIB.address[0] + ';;;;Egypt', 'URL:' + BIB.page, 'END:VCARD'].join('\r\n');
+  try {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([v], { type: 'text/vcard' }));
+    a.download = 'BiB-Broker.vcf'; document.body.appendChild(a); a.click(); a.remove();
+    toast(L('افتح الملف واحفظ الرقم ✓', 'Open the file to save the contact ✓'));
+  } catch (e) { toast(L('مش متاح هنا', 'Not available here')); }
+}
+
+/* ---------- الأحداث ---------- */
+const applyTheme = d => {
+  document.documentElement.dataset.theme = d ? 'dark' : 'light';
+  $('themeIco').setAttribute('d', d ? 'M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4' : 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z');
+};
+let dark = store.get('bib_theme') ? store.get('bib_theme') === 'dark' : (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+applyTheme(dark);
+$('themeBtn').onclick = () => { dark = !dark; applyTheme(dark); store.set('bib_theme', dark ? 'dark' : 'light'); };
+$('langBtn').onclick = () => { en = !en; store.set('bib_lang', en ? 'en' : 'ar'); renderAll(); };
+document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { tab = b.dataset.tab; renderDepts(); });
+['cPrice', 'cDown', 'cYears'].forEach(id => $(id).addEventListener('input', calc));
+$('cPrice').addEventListener('blur', () => { const n = num($('cPrice').value); $('cPrice').value = n ? fmt(n) : ''; calc(); });
+$('calcSend').onclick = () => {
+  const c = calc();
+  location.href = wa(BIB.whatsapp, L('أهلاً، عايز وحدات في الحدود دي:', 'Hello, I am looking for units in this range:') + '\n' +
+    L('السعر: ', 'Price: ') + fmt(c.price) + '\n' + L('المقدم: ', 'Down payment: ') + c.down + '%\n' + L('التقسيط: ', 'Installments: ') + c.years + L(' سنين', ' years') + '\n' + L('القسط الشهري حوالي: ', 'Monthly about: ') + fmt(c.m) + srcLine());
+};
+$('sellOpen').onclick = () => { $('sellBox').classList.add('open'); $('sArea').focus(); };
+$('sellForm').onsubmit = e => {
+  e.preventDefault();
+  location.href = wa(BIB.whatsapp, L('🏠 عندي وحدة عايز أبيعها', '🏠 I have a unit to sell') + '\n' + L('النوع: ', 'Type: ') + $('sType').value + '\n' + L('المساحة: ', 'Area: ') + $('sArea').value + '\n' +
+    L('المكان: ', 'Location: ') + $('sLoc').value + '\n' + L('السعر المتوقع: ', 'Expected price: ') + $('sPrice').value + '\n' + L('الاسم: ', 'Name: ') + $('sName').value + srcLine());
+};
+$('bookForm').onsubmit = e => {
+  e.preventDefault();
+  if (slot === '') { toast(L('اختار الميعاد الأول', 'Pick a time first')); return; }
+  const s = renderDays.S[Number(slot)];
+  location.href = wa(BIB.whatsapp, L('📅 حجز معاينة', '📅 Viewing request') + '\n' + L('الاسم: ', 'Name: ') + $('bName').value + '\n' + L('عايز أعاين: ', 'To see: ') + ($('bWhat').value || '—') + '\n' +
+    L('اليوم: ', 'Day: ') + $('bDay').options[$('bDay').selectedIndex].text + '\n' + L('الميعاد: ', 'Time: ') + L(s[0], s[1]) + srcLine());
+};
+$('advBtn').onclick = () => $('sheet').classList.add('show');
+$('sheetX').onclick = () => $('sheet').classList.remove('show');
+$('sheet').onclick = e => { if (e.target === $('sheet')) $('sheet').classList.remove('show'); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('sheet').classList.remove('show'); });
+
+/* ---------- البداية ---------- */
+renderAll();
+renderStats(true);
+const statObs = new IntersectionObserver(es => es.forEach(en_ => {
+  if (!en_.isIntersecting) return; statObs.disconnect();
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.stat b').forEach(b => {
+    const to = Number(b.dataset.to), pre = b.dataset.pre, t0 = performance.now(), d = reduce ? 1 : 1400;
+    const step = t => { const k = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - k, 3); b.textContent = pre + fmt(to * e); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
+}), { threshold: .4 });
+statObs.observe($('stats'));
+const revObs = new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting) { x.target.classList.add('in'); revObs.unobserve(x.target); } }), { threshold: .12 });
+document.querySelectorAll('.sec').forEach(s => { s.classList.add('reveal'); revObs.observe(s); });
+loadSheet();
+}
+</script>
+</body>
+</html>
