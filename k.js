@@ -6,7 +6,10 @@
   var path = location.pathname.replace(/\/index\.html$/, '').replace(/^\/+|\/+$/g, '');
   var page = host.indexOf('bot504') === 0 ? 'me' : (path.toLowerCase().replace(/\//g, '-').replace(/[^a-z0-9_-]/g, '') || 'home');
   var qs = new URLSearchParams(location.search);
-  var src = qs.get('s') === 't' ? 't' : (qs.get('s') === 'q' ? 'q' : 'd');
+  // مصدر الزيارة: t تاج، q كيو آر، fb فيسبوك، tt تيك توك، ig إنستجرام، g جروبات، y يافطة، w واتساب
+  var SRCS = ['t', 'q', 'fb', 'tt', 'ig', 'g', 'y', 'w'];
+  var sv = (qs.get('s') || '').toLowerCase();
+  var src = SRCS.indexOf(sv) > -1 ? sv : 'd';
 
   function send(o) {
     o.p = page;
