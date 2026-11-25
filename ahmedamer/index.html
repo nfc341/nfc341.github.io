@@ -112,6 +112,11 @@ header{display:flex;justify-content:space-between;align-items:center;padding:cal
 .status.closed i{background:#e74c3c;box-shadow:0 0 8px #e74c3c}
 .status small{color:var(--mut);font-weight:400}
 @keyframes blink{50%{opacity:.4}}
+.install{display:flex;align-items:center;gap:11px;padding:11px 12px;margin-top:12px;border-color:rgba(212,175,55,.45)}
+.install img{width:42px;height:42px;border-radius:11px;flex-shrink:0}
+.install div{flex:1;min-width:0}
+.install b{display:block;font-size:14px}
+.install small{color:var(--mut);font-size:11.5px}
 .social{display:flex;gap:8px;margin-top:10px}
 .social a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 4px;font:700 12.5px var(--en);color:var(--tx);text-decoration:none;border-radius:12px}
 .social .ic{width:18px;height:18px;color:var(--ac)}
@@ -274,6 +279,12 @@ nav .dot{position:absolute;top:3px;inset-inline-end:10px;width:8px;height:8px;bo
       <a class="q glass" id="qWa" target="_blank" rel="noopener"><svg class="ic"><use href="#i-wa"/></svg><span data-t="whatsapp"></span></a>
       <a class="q glass" id="qDir" target="_blank" rel="noopener"><svg class="ic"><use href="#i-map"/></svg><span data-t="directions"></span></a>
       <a class="q glass" id="qSave"><svg class="ic"><use href="#i-user"/></svg><span data-t="saveMe"></span></a>
+    </div>
+
+    <div class="install glass hidden" id="installBar">
+      <img src="icon-192.png" alt="">
+      <div><b data-t="instT"></b><small data-t="instS"></small></div>
+      <button class="btn" id="installBtn" data-t="instB"></button>
     </div>
 
     <div class="social">
@@ -2739,24 +2750,28 @@ const DEFAULTS = {
   admin: { pass: "1234" }
 };
 
-/* ===== التخزين (تجريبي على الجهاز — هيتربط بقاعدة بيانات أونلاين) ===== */
+/* ===== الخادم (برنامج جوجل) ===== */
+const API_URL = "https://script.google.com/macros/s/AKfycbxzDWRz0K0ircgmv8e8Bm9F_gKaBws82o-odTZGe6MB2y2mNjt0s8DW09f0NDXUgGs7sg/exec";
+const hasAPI = () => /^https:\/\/script\.google\.com\//.test(API_URL);
+async function api(action, payload){
+  const r = await fetch(API_URL, { method:"POST", body: JSON.stringify(Object.assign({action}, payload || {})) });
+  return r.json();
+}
+
+/* ===== التخزين ===== */
+function normalize(d){
+  const out = Object.assign(structuredClone(DEFAULTS), d || {});
+  out.info = Object.assign(structuredClone(DEFAULTS.info), (d && d.info) || {});
+  out.admin = Object.assign(structuredClone(DEFAULTS.admin), (d && d.admin) || {});
+  if (!Array.isArray(out.info.hours) || out.info.hours.length !== 7) out.info.hours = structuredClone(DEFAULTS.info.hours);
+  ["services","products","offers","gallery"].forEach(k => { if (!Array.isArray(out[k])) out[k] = structuredClone(DEFAULTS[k]); });
+  return out;
+}
 const Store = {
   key: "aa_data_v2",
   load(){
-    const base = structuredClone(DEFAULTS);
-    try {
-      const s = localStorage.getItem(this.key);
-      if (s){
-        const d = JSON.parse(s);
-        const out = Object.assign(base, d);
-        out.info = Object.assign(structuredClone(DEFAULTS.info), d.info || {});
-        out.admin = Object.assign(structuredClone(DEFAULTS.admin), d.admin || {});
-        if (!Array.isArray(out.info.hours) || out.info.hours.length !== 7) out.info.hours = structuredClone(DEFAULTS.info.hours);
-        ["services","products","offers","gallery"].forEach(k => { if (!Array.isArray(out[k])) out[k] = structuredClone(DEFAULTS[k]); });
-        return out;
-      }
-    } catch(e){}
-    return base;
+    try { const s = localStorage.getItem(this.key); if (s) return normalize(JSON.parse(s)); } catch(e){}
+    return structuredClone(DEFAULTS);
   },
   save(d){ try { localStorage.setItem(this.key, JSON.stringify(d)); return true; } catch(e){ return false; } }
 };
@@ -2768,6 +2783,8 @@ let D = Store.load();
 
 /* ===== الترجمة ===== */
 const T = {
+  instT:{ar:"نزّل تطبيق أحمد عامر",en:"Get the Ahmed Amer app"}, instS:{ar:"على شاشة موبايلك، ويوصلك كل جديد",en:"On your home screen, with every new offer"}, instB:{ar:"تثبيت",en:"Install"},
+  iosInstT:{ar:"تثبيت التطبيق على الآيفون",en:"Install on iPhone"},
   ownerName:{ar:"أحمد عامر",en:"Ahmed Amer"}, ownerRole:{ar:"صاحب صالون حلاقة ✂️",en:"Barber Shop Owner ✂️"},
   call:{ar:"اتصال",en:"Call"}, whatsapp:{ar:"واتساب",en:"WhatsApp"}, directions:{ar:"وصّلني",en:"Directions"}, saveMe:{ar:"احفظني",en:"Save me"},
   services:{ar:"الخدمات",en:"Services"}, seeAll:{ar:"الكل ←",en:"See all →"}, offers:{ar:"العروض",en:"Offers"}, ourWork:{ar:"من شغلنا",en:"Our Work"},
@@ -3173,11 +3190,18 @@ function askPass(){
   openSheet(`<h2><svg class="ic" style="color:var(--ac)"><use href="#i-gear"/></svg>لوحة التحكم</h2>
     <input class="inp" id="admPass" type="password" inputmode="numeric" placeholder="كلمة السر" style="margin-bottom:12px">
     <button class="btn block" id="admGo">دخول</button>`);
-  const go2 = () => { if ($("#admPass").value === D.admin.pass) openAdmin("info"); else toast("كلمة السر غلط"); };
+  const go2 = async () => {
+    const pass = $("#admPass").value;
+    if (!hasAPI()){ if (pass === D.admin.pass){ ADMIN_PASS = pass; openAdmin("info"); } else toast("كلمة السر غلط"); return; }
+    const b = $("#admGo"); b.disabled = true; b.textContent = "لحظة...";
+    try { const r = await api("login", {pass}); if (r.ok){ ADMIN_PASS = pass; openAdmin("info"); } else toast(r.error === "locked" ? "محاولات كتير.. استنى ١٠ دقايق" : "كلمة السر غلط"); }
+    catch(e){ toast("مفيش اتصال بالإنترنت"); }
+    b.disabled = false; b.textContent = "دخول";
+  };
   $("#admGo").onclick = go2; $("#admPass").onkeydown = e => { if (e.key === "Enter") go2(); };
   setTimeout(()=>$("#admPass").focus(), 350);
 }
-let DRAFT = null;
+let DRAFT = null, ADMIN_PASS = "";
 const setPath = (o, p, v) => { const k = p.split("."); let x = o; for (let i=0;i<k.length-1;i++) x = x[k[i]]; x[k[k.length-1]] = v; };
 const fld = (label, path, val, type="text", extra="") => `<div><label>${label}</label><input class="inp" data-k="${path}" type="${type}" value="${esc(val)}" ${extra}></div>`;
 const uid = p => p + Date.now().toString(36) + Math.floor(Math.random()*99);
@@ -3239,11 +3263,15 @@ function openAdmin(sec){
   if (sec === "push"){
     body = `<div class="adm-item glass"><label>عنوان الإشعار</label><input class="inp" id="pTitle" value="عرض جديد من أحمد عامر 💈">
       <label>نص الإشعار</label><textarea class="inp" id="pBody" rows="3">خصم ٢٠٪ النهارده بس.. افتح الصفحة وشوف العرض</textarea>
+      <div class="adm-imgrow"><div class="adm-thumb" id="pThumb">صورة</div><div style="flex:1;display:grid;gap:6px"><label>صورة مع الإشعار (اختياري)</label><input type="file" accept="image/*" class="inp" id="pImg"></div></div>
       <button class="btn block" id="pSend"><svg class="ic"><use href="#i-bell"/></svg>ابعت لكل المشتركين</button>
-      <p class="mut" style="font-size:12px;line-height:1.8">الإرسال هيشتغل بعد ربط خدمة الإشعارات. دلوقتي الزرار بيوريك شكل الإشعار على موبايلك بس.</p></div>`;
+      <p class="mut" style="font-size:12px;line-height:1.8">الإشعار هيوصل لكل اللي فعّلوا الإشعارات من الصفحة، ولما يدوسوا عليه هتفتح لهم الصفحة.</p></div>`;
   }
   if (sec === "sec"){
-    body = `<div class="adm-item glass">${fld("كلمة السر الجديدة","admin.pass",d.admin.pass,"text")}</div>
+    body = hasAPI()
+      ? `<div class="adm-item glass"><label>كلمة السر الجديدة (٤ حروف أو أرقام على الأقل)</label><input class="inp" id="newPass" type="text"><button class="btn block" id="setPass">غيّر كلمة السر</button></div>
+      <button class="btn ghost block" id="resetAll" style="margin-top:8px">رجّع كل البيانات للأصل</button>`
+      : `<div class="adm-item glass">${fld("كلمة السر الجديدة","admin.pass",d.admin.pass,"text")}</div>
       <button class="btn ghost block" id="resetAll" style="margin-top:8px">رجّع كل البيانات للأصل</button>`;
   }
   openSheet(`<h2><svg class="ic" style="color:var(--ac)"><use href="#i-gear"/></svg>لوحة تحكم أحمد</h2>
@@ -3259,10 +3287,31 @@ function openAdmin(sec){
     if (el.type === "datetime-local") v = v ? new Date(v).toISOString() : "";
     setPath(DRAFT, el.dataset.k, v);
   };
-  $$("#admBody [data-img]").forEach(inp => inp.onchange = async () => { const f = inp.files[0]; if (!f) return; setPath(DRAFT, inp.dataset.img, await shrink(f, 600)); openAdmin(sec); });
-  const gi = $("#galIn"); if (gi) gi.onchange = async () => { for (const f of gi.files) DRAFT.gallery.push(await shrink(f, 900)); openAdmin(sec); };
+  $$("#admBody [data-img]").forEach(inp => inp.onchange = async () => { const f = inp.files[0]; if (!f) return; const u = await imgToUrl(f, 600); if (u){ setPath(DRAFT, inp.dataset.img, u); openAdmin(sec); } });
+  const gi = $("#galIn"); if (gi) gi.onchange = async () => { for (const f of gi.files){ const u = await imgToUrl(f, 1000); if (u) DRAFT.gallery.push(u); } openAdmin(sec); };
+  let pImgUrl = "";
+  const pi = $("#pImg"); if (pi) pi.onchange = async () => { const f = pi.files[0]; if (!f) return; const u = await imgToUrl(f, 1000); if (u){ pImgUrl = u; $("#pThumb").style.backgroundImage = `url('${u}')`; $("#pThumb").textContent = ""; } };
+  const sp = $("#setPass"); if (sp) sp.onclick = async () => {
+    const np = $("#newPass").value.trim(); if (np.length < 4) return toast("كلمة السر لازم ٤ حروف على الأقل");
+    sp.disabled = true;
+    try { const r = await api("setpass", {pass: ADMIN_PASS, newpass: np}); if (r.ok){ ADMIN_PASS = np; toast("اتغيرت كلمة السر ✔"); $("#newPass").value = ""; } else toast("حصلت مشكلة"); } catch(e){ toast("مفيش اتصال بالإنترنت"); }
+    sp.disabled = false;
+  };
   const hb = $("#hereBtn"); if (hb) hb.onclick = () => navigator.geolocation.getCurrentPosition(p => { DRAFT.info.lat = +p.coords.latitude.toFixed(6); DRAFT.info.lng = +p.coords.longitude.toFixed(6); openAdmin("info"); toast("اتحدد مكان المحل ✔"); }, () => toast("مش قادر أحدد المكان"), {enableHighAccuracy:true});
   const ps = $("#pSend"); if (ps) ps.onclick = async () => {
+    if (hasAPI()){
+      const title = $("#pTitle").value.trim(), body = $("#pBody").value.trim();
+      if (!body) return toast("اكتب نص الإشعار");
+      if (!confirm("هيتبعت لكل المشتركين دلوقتي. متأكد؟")) return;
+      ps.disabled = true; ps.textContent = "بيتبعت...";
+      try {
+        const r = await api("push", {pass: ADMIN_PASS, title, body, image: pImgUrl, url: pageURL()});
+        if (r.ok) toast(r.recipients != null ? `اتبعت ✔ (${r.recipients} مشترك)` : "اتبعت ✔");
+        else toast(r.error === "nokey" ? "مفتاح الإشعارات مش متحط في برنامج جوجل" : "الإشعار ماتبعتش: " + (r.error || ""));
+      } catch(e){ toast("مفيش اتصال بالإنترنت"); }
+      ps.disabled = false; ps.innerHTML = '<svg class="ic"><use href="#i-bell"/></svg>ابعت لكل المشتركين';
+      return;
+    }
     if (!("Notification" in window)) return toast("المتصفح مش بيدعم الإشعارات");
     if (Notification.permission !== "granted") await Notification.requestPermission();
     if (Notification.permission !== "granted") return;
@@ -3281,10 +3330,26 @@ function openAdmin(sec){
   $("#admSave").onclick = saveDraft;
   $("#admClose").onclick = () => { DRAFT = null; closeSheet(); };
 }
-function saveDraft(){
+async function saveDraft(){
+  if (hasAPI()){
+    const b = $("#admSave"); if (b){ b.disabled = true; b.textContent = "بيتحفظ..."; }
+    const data = structuredClone(DRAFT); delete data.admin;
+    try {
+      const r = await api("save", {pass: ADMIN_PASS, data});
+      if (!r.ok){ toast(r.error === "auth" ? "انتهت الجلسة.. ادخل تاني" : "ماتحفظش، جرّب تاني"); if (b){ b.disabled = false; b.textContent = "حفظ التعديلات"; } return; }
+    } catch(e){ toast("مفيش اتصال بالإنترنت"); if (b){ b.disabled = false; b.textContent = "حفظ التعديلات"; } return; }
+  }
   D = DRAFT; DRAFT = null;
-  if (Store.save(D)) toast(t("saved")); else toast("المساحة مش كفاية.. صغّر الصور");
+  if (Store.save(D)) toast(hasAPI() ? "اتحفظ ووصل لكل الزباين ✔" : t("saved")); else toast("المساحة مش كفاية.. صغّر الصور");
   closeSheet(); renderAll();
+}
+async function imgToUrl(file, max){
+  const dataUrl = await shrink(file, max);
+  if (!hasAPI()) return dataUrl;
+  toast("بيرفع الصورة...");
+  try { const r = await api("upload", {pass: ADMIN_PASS, name: file.name, dataUrl}); if (r.ok) { toast("الصورة اترفعت ✔"); return r.url; } toast("الصورة ماترفعتش"); }
+  catch(e){ toast("مفيش اتصال بالإنترنت"); }
+  return "";
 }
 function shrink(file, max){
   return new Promise(res => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => {
@@ -3304,10 +3369,32 @@ function renderGreet(){
     : (morning ? "☀️ Good morning, welcome!" : "🌙 Good evening, welcome!");
 }
 
+/* ===== زرار تثبيت التطبيق ===== */
+let installEvt = null;
+function showInstall(on){ $("#installBar").classList.toggle("hidden", !on); }
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (!standalone) showInstall(true); });
+window.addEventListener("appinstalled", () => { showInstall(false); installEvt = null; toast(LANG==="ar" ? "التطبيق اتثبت ✔" : "App installed ✔"); });
+if (isIOS && !standalone) showInstall(true);
+$("#installBtn").addEventListener("click", async () => {
+  if (installEvt){ installEvt.prompt(); try { await installEvt.userChoice; } catch(e){} installEvt = null; return; }
+  if (isIOS) openSheet(`<h2>${t("iosInstT")}</h2><ol class="steps"><li>${t("ios1")}</li><li>${t("ios2")}</li><li>${LANG==="ar" ? "دوس «إضافة»، وهتلاقي أيقونة أحمد عامر على الشاشة" : "Tap “Add” and find the Ahmed Amer icon on your screen"}</li></ol><button class="btn block" onclick="closeSheet()">${t("ok")}</button>`);
+});
+
 /* ===== التشغيل ===== */
 function renderAll(){ renderGreet(); renderStatus(); renderHours(); renderServices(); renderGallery(); renderStore(); renderOffers(); renderLinks(); }
 fixEnds(D); if (!localStorage.getItem(Store.key)) Store.save(D);
 applyLang();
+async function syncFromServer(){
+  if (!hasAPI()) return;
+  try {
+    const r = await (await fetch(API_URL)).json();
+    if (r && r.ok && r.data && r.data.info){
+      D = normalize(r.data); Store.save(D);
+      if (!DRAFT) renderAll();
+    }
+  } catch(e){}
+}
+syncFromServer();
 setInterval(() => { renderStatus(); renderGreet(); }, 60000);
 
 const intro = $("#intro");
