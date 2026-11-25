@@ -2967,6 +2967,10 @@ OneSignalDeferred.push(async function(OneSignal){
     });
     OS = OneSignal;
     OneSignal.Notifications.addEventListener("permissionChange", () => renderOffers());
+    /* لو الزبون كان موافق قبل كده، نسجّله في الخدمة تلقائي */
+    if (("Notification" in window) && Notification.permission === "granted" && !OneSignal.User.PushSubscription.optedIn){
+      try { await OneSignal.User.PushSubscription.optIn(); } catch(e){}
+    }
   } catch(e){ console.warn("OneSignal init", e); }
 });
 const notifOK = () => ("Notification" in window) && Notification.permission === "granted";
