@@ -3510,6 +3510,16 @@ async function loadStats(){
   <p class="mut" style="font-size:11.5px;line-height:1.8;margin-top:8px">الأرقام من غير أسماء ولا أرقام تليفونات، عشان خصوصية الزباين. وزياراتك إنت من الموبايل ده مش بتتحسب.</p>`;
 }
 
+/* ===== تحديث تلقائي لأحدث نسخة ===== */
+const BUILD = "1795653792";
+(async () => {
+  try {
+    const r = await fetch(location.pathname, {cache:"reload"});
+    const m = (await r.text()).match(/const BUILD = "([^"]+)"/);
+    if (m && m[1] !== BUILD && sessionStorage.getItem("aa_upd") !== m[1]){ sessionStorage.setItem("aa_upd", m[1]); location.reload(); }
+  } catch(e){}
+})();
+
 /* ===== التشغيل ===== */
 function renderAll(){ renderGreet(); renderTeam(); renderStatus(); renderHours(); renderServices(); renderGallery(); renderStore(); renderOffers(); renderLinks(); }
 fixEnds(D); if (!localStorage.getItem(Store.key)) Store.save(D);
