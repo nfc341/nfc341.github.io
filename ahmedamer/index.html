@@ -132,6 +132,23 @@ html[dir=rtl] .team-t:after{background:linear-gradient(270deg,var(--line),transp
 .member .acts{display:flex;justify-content:center;gap:8px;margin-top:10px}
 .member .acts a{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--card2);border:1px solid var(--line);color:var(--ac)}
 .member .acts .ic{width:17px;height:17px}
+.st-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.st-grid.two{grid-template-columns:1fr 1fr}
+.st{padding:12px 8px;text-align:center;border-radius:14px}
+.st small{display:block;color:var(--mut);font-size:11.5px;font-weight:700}
+.st b{display:block;font-size:26px;font-weight:900;line-height:1.3;background:var(--goldtx);-webkit-background-clip:text;background-clip:text;color:transparent}
+.st span{font-size:11px;color:var(--mut)}
+.st-card{padding:13px;margin-bottom:8px;border-radius:14px}
+.st-card h4{font-size:14px;margin-bottom:10px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:120px;padding-top:14px}
+.bar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative}
+.bar i{width:100%;border-radius:5px 5px 2px 2px;background:var(--gold);display:block}
+.bar em{font-style:normal;font-size:9.5px;color:var(--mut);margin-top:4px}
+.bar span{position:absolute;top:0;font-size:9.5px;color:var(--ac);font-weight:700}
+.hb{display:grid;grid-template-columns:118px 1fr 34px;align-items:center;gap:8px;font-size:12.5px;margin-bottom:7px}
+.hb div{height:8px;border-radius:9px;background:rgba(255,255,255,.06);overflow:hidden}
+.hb i{display:block;height:100%;background:var(--gold);border-radius:9px}
+.hb b{text-align:left;color:var(--ac)}
 .social{display:flex;gap:8px;margin-top:10px}
 .social a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 4px;font:700 12.5px var(--en);color:var(--tx);text-decoration:none;border-radius:12px}
 .social .ic{width:18px;height:18px;color:var(--ac)}
@@ -2778,6 +2795,17 @@ async function api(action, payload){
   return r.json();
 }
 
+/* ===== تسجيل التفاعل (من غير أي بيانات شخصية) ===== */
+function track(ev){
+  if (!hasAPI() || localStorage.getItem("aa_admin") === "1") return;
+  try {
+    let v = localStorage.getItem("aa_vid");
+    if (!v){ v = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem("aa_vid", v); }
+    const src = (new URLSearchParams(location.search).get("src") || "").toLowerCase();
+    fetch(API_URL, { method:"POST", mode:"no-cors", keepalive:true, body: JSON.stringify({action:"hit", ev, v, src}) });
+  } catch(e){}
+}
+
 /* ===== التخزين ===== */
 function normalize(d){
   const out = Object.assign(structuredClone(DEFAULTS), d || {});
@@ -3032,7 +3060,7 @@ async function enableNotifs(){
     r = await Notification.requestPermission();
   }
   if (r === "granted"){
-    ls.set("aa_unlocked","1");
+    ls.set("aa_unlocked","1"); track("notif");
     toast(t("unlocked"));
     /* هنا هيتسجل الزبون في خدمة الإشعارات بعد الربط */
     renderOffers(); go("offers");
@@ -3214,7 +3242,7 @@ function askPass(){
     const pass = $("#admPass").value;
     if (!hasAPI()){ if (pass === D.admin.pass){ ADMIN_PASS = pass; openAdmin("info"); } else toast("كلمة السر غلط"); return; }
     const b = $("#admGo"); b.disabled = true; b.textContent = "لحظة...";
-    try { const r = await api("login", {pass}); if (r.ok){ ADMIN_PASS = pass; openAdmin("info"); } else toast(r.error === "locked" ? "محاولات كتير.. استنى ١٠ دقايق" : "كلمة السر غلط"); }
+    try { const r = await api("login", {pass}); if (r.ok){ ADMIN_PASS = pass; try { localStorage.setItem("aa_admin","1"); } catch(e){} openAdmin("stats"); } else toast(r.error === "locked" ? "محاولات كتير.. استنى ١٠ دقايق" : "كلمة السر غلط"); }
     catch(e){ toast("مفيش اتصال بالإنترنت"); }
     b.disabled = false; b.textContent = "دخول";
   };
@@ -3228,7 +3256,7 @@ const uid = p => p + Date.now().toString(36) + Math.floor(Math.random()*99);
 
 function openAdmin(sec){
   if (!DRAFT) DRAFT = structuredClone(D);
-  const tabs = [["info","البيانات"],["services","الخدمات"],["products","المتجر"],["offers","العروض"],["gallery","الشغل"],["team","الفريق"],["push","إشعار"],["sec","الأمان"]];
+  const tabs = [["stats","التفاعل"],["info","البيانات"],["services","الخدمات"],["products","المتجر"],["offers","العروض"],["gallery","الشغل"],["team","الفريق"],["push","إشعار"],["sec","الأمان"]];
   let body = "";
   const d = DRAFT;
   if (sec === "info"){
@@ -3280,6 +3308,9 @@ function openAdmin(sec){
     body = `<div class="adm-item glass"><label>ضيف صور من شغلك</label><input type="file" accept="image/*" multiple class="inp" id="galIn"></div>
       <div class="gal-adm">${d.gallery.map((g,k)=>`<div style="background-image:url('${g}')"><button data-del="gallery.${k}">×</button></div>`).join("")}</div>`;
   }
+  if (sec === "stats"){
+    body = `<div id="stBox" class="mut" style="text-align:center;padding:30px 0">لحظة.. بجيب الأرقام</div>`;
+  }
   if (sec === "team"){
     body = d.team.map((m,k)=>`<div class="adm-item glass">
       <div class="adm-imgrow"><div class="adm-thumb" style="${m.img?`background-image:url('${m.img}')`:""}">${m.img?"":"صورة"}</div>
@@ -3327,6 +3358,7 @@ function openAdmin(sec){
     try { const r = await api("setpass", {pass: ADMIN_PASS, newpass: np}); if (r.ok){ ADMIN_PASS = np; toast("اتغيرت كلمة السر ✔"); $("#newPass").value = ""; } else toast("حصلت مشكلة"); } catch(e){ toast("مفيش اتصال بالإنترنت"); }
     sp.disabled = false;
   };
+  if (sec === "stats") loadStats();
   const hb = $("#hereBtn"); if (hb) hb.onclick = () => navigator.geolocation.getCurrentPosition(p => { DRAFT.info.lat = +p.coords.latitude.toFixed(6); DRAFT.info.lng = +p.coords.longitude.toFixed(6); openAdmin("info"); toast("اتحدد مكان المحل ✔"); }, () => toast("مش قادر أحدد المكان"), {enableHighAccuracy:true});
   const ps = $("#pSend"); if (ps) ps.onclick = async () => {
     if (hasAPI()){
@@ -3417,9 +3449,63 @@ window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); instal
 window.addEventListener("appinstalled", () => { showInstall(false); installEvt = null; toast(LANG==="ar" ? "التطبيق اتثبت ✔" : "App installed ✔"); });
 if (isIOS && !standalone) showInstall(true);
 $("#installBtn").addEventListener("click", async () => {
-  if (installEvt){ installEvt.prompt(); try { await installEvt.userChoice; } catch(e){} installEvt = null; return; }
+  if (installEvt){ installEvt.prompt(); track("install"); try { await installEvt.userChoice; } catch(e){} installEvt = null; return; }
   if (isIOS) openSheet(`<h2>${t("iosInstT")}</h2><ol class="steps"><li>${t("ios1")}</li><li>${t("ios2")}</li><li>${LANG==="ar" ? "دوس «إضافة»، وهتلاقي أيقونة أحمد عامر على الشاشة" : "Tap “Add” and find the Ahmed Amer icon on your screen"}</li></ol><button class="btn block" onclick="closeSheet()">${t("ok")}</button>`);
 });
+
+/* ===== ضغطات الأزرار ===== */
+document.addEventListener("click", e => {
+  const el = e.target.closest("#qCall,#qWa,#qDir,#dirBtn,[data-dir],#qSave,[data-book],#sendOrder,#sIg,#sTt,#sFb,.member .acts a,[data-qr]");
+  if (!el) return;
+  const map = {qCall:"call", qWa:"wa", qDir:"dir", dirBtn:"dir", qSave:"save", sendOrder:"order", sIg:"insta", sTt:"tiktok", sFb:"fb"};
+  let ev = map[el.id];
+  if (!ev && el.matches("[data-dir]")) ev = "dir";
+  if (!ev && el.matches("[data-book]")) ev = "book";
+  if (!ev && el.matches(".member .acts a")) ev = "team";
+  if (!ev && el.matches("[data-qr]")) ev = "qr_" + el.dataset.qr;
+  if (ev) track(ev);
+}, true);
+
+/* ===== لوحة التفاعل ===== */
+const EVN = {call:"اتصال 📞", wa:"واتساب 💬", dir:"وصّلني 📍", save:"حفظ الرقم 👤", book:"حجز خدمة ✂️", order:"طلب من المتجر 🛍", notif:"فعّل الإشعارات 🔔", install:"ثبّت التطبيق 📲", insta:"إنستجرام", tiktok:"تيك توك", fb:"فيسبوك", team:"كلّم حد من الفريق", qr_insta:"كود إنستجرام", qr_wallet:"كود المحفظة", qr_page:"كود الصفحة"};
+const cairoDay = (d) => d.toLocaleDateString("en-CA", {timeZone:"Africa/Cairo"});
+async function loadStats(){
+  const box = $("#stBox"); if (!box) return;
+  if (!hasAPI()){ box.textContent = "الإحصائيات محتاجة الربط ببرنامج جوجل"; return; }
+  let r; try { r = await api("stats", {pass: ADMIN_PASS}); } catch(e){ box.textContent = "مفيش اتصال بالإنترنت"; return; }
+  if (!r.ok){ box.textContent = r.error === "unknown" ? "حدّث كود برنامج جوجل الأول" : "حصلت مشكلة"; return; }
+  const days = r.days || {};
+  const keys = n => Array.from({length:n}, (_,i) => cairoDay(new Date(Date.now() - i*864e5)));
+  const sum = (ks, f) => ks.reduce((a,k) => a + (days[k] ? f(days[k]) : 0), 0);
+  const k1 = keys(1), k7 = keys(7), k30 = keys(30);
+  const V = d => d.visits || 0, U = d => d.uniques || 0, N = d => d.newv || 0;
+  const evs = {}, src = {qr:0, tag:0, direct:0};
+  k30.forEach(k => { const d = days[k]; if (!d) return;
+    Object.entries(d.ev || {}).forEach(([e,n]) => evs[e] = (evs[e]||0) + n);
+    Object.entries(d.src || {}).forEach(([s,n]) => src[s] = (src[s]||0) + n); });
+  const u30 = sum(k30,U), n30 = sum(k30,N);
+  const k14 = keys(14).reverse(), mx = Math.max(1, ...k14.map(k => days[k] ? V(days[k]) : 0));
+  const evList = Object.entries(evs).sort((a,b) => b[1]-a[1]), evMax = Math.max(1, ...evList.map(x => x[1]));
+  const srcT = Math.max(1, src.qr + src.tag + src.direct);
+  box.className = ""; box.style.cssText = "";
+  box.innerHTML = `
+  <div class="st-grid">
+    <div class="st glass"><small>النهارده</small><b>${nf(sum(k1,V))}</b><span>${nf(sum(k1,U))} شخص</span></div>
+    <div class="st glass"><small>آخر ٧ أيام</small><b>${nf(sum(k7,V))}</b><span>${nf(sum(k7,U))} شخص</span></div>
+    <div class="st glass"><small>آخر ٣٠ يوم</small><b>${nf(sum(k30,V))}</b><span>${nf(u30)} شخص</span></div>
+  </div>
+  <div class="st-grid two">
+    <div class="st glass"><small>مشتركين الإشعارات 🔔</small><b>${r.subs == null ? "—" : nf(r.subs)}</b><span>هيوصلهم أي إشعار تبعته</span></div>
+    <div class="st glass"><small>كل اللي دخلوا لحد دلوقتي</small><b>${nf(r.allVisitors || 0)}</b><span>${nf(n30)} جديد · ${nf(Math.max(0,u30-n30))} رجعوا تاني</span></div>
+  </div>
+  <div class="st-card glass"><h4>الزيارات آخر ١٤ يوم</h4>
+    <div class="bars">${k14.map(k => { const v = days[k] ? V(days[k]) : 0; return `<div class="bar"><i style="height:${Math.max(3, v/mx*100)}%"></i><em>${nf(+k.slice(8))}</em><span>${v ? nf(v) : ""}</span></div>`; }).join("")}</div></div>
+  <div class="st-card glass"><h4>دخلوا منين؟ (آخر ٣٠ يوم)</h4>
+    ${[["qr","الكود المطبوع"],["tag","التاج"],["direct","رابط مباشر / سوشيال"]].map(([k,l]) => `<div class="hb"><span>${l}</span><div><i style="width:${src[k]/srcT*100}%"></i></div><b>${nf(src[k])}</b></div>`).join("")}</div>
+  <div class="st-card glass"><h4>عملوا إيه في الصفحة؟ (آخر ٣٠ يوم)</h4>
+    ${evList.length ? evList.map(([e,n]) => `<div class="hb"><span>${EVN[e] || e}</span><div><i style="width:${n/evMax*100}%"></i></div><b>${nf(n)}</b></div>`).join("") : `<p class="mut" style="font-size:13px">لسه مفيش ضغطات</p>`}</div>
+  <p class="mut" style="font-size:11.5px;line-height:1.8;margin-top:8px">الأرقام من غير أسماء ولا أرقام تليفونات، عشان خصوصية الزباين. وزياراتك إنت من الموبايل ده مش بتتحسب.</p>`;
+}
 
 /* ===== التشغيل ===== */
 function renderAll(){ renderGreet(); renderTeam(); renderStatus(); renderHours(); renderServices(); renderGallery(); renderStore(); renderOffers(); renderLinks(); }
@@ -3436,6 +3522,7 @@ async function syncFromServer(){
   } catch(e){}
 }
 syncFromServer();
+try { if (!sessionStorage.getItem("aa_v")){ sessionStorage.setItem("aa_v","1"); track("visit"); } } catch(e){ track("visit"); }
 setInterval(() => { renderStatus(); renderGreet(); }, 60000);
 
 const intro = $("#intro");
