@@ -3447,9 +3447,12 @@ let installEvt = null;
 function showInstall(on){ $("#installBar").classList.toggle("hidden", !on); }
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (!standalone) showInstall(true); });
 window.addEventListener("appinstalled", () => { showInstall(false); installEvt = null; toast(LANG==="ar" ? "التطبيق اتثبت ✔" : "App installed ✔"); });
-if (isIOS && !standalone) showInstall(true);
+if (!standalone) showInstall(true);
 $("#installBtn").addEventListener("click", async () => {
   if (installEvt){ installEvt.prompt(); track("install"); try { await installEvt.userChoice; } catch(e){} installEvt = null; return; }
+  if (!isIOS){ track("install"); return openSheet(`<h2>${LANG==="ar" ? "تثبيت تطبيق أحمد عامر" : "Install the Ahmed Amer app"}</h2><ol class="steps">${LANG==="ar"
+    ? "<li>دوس على النقط الثلاثة ⋮ فوق في كروم</li><li>اختار «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»</li><li>دوس «تثبيت»، وهتلاقي أيقونة أحمد عامر على الشاشة</li>"
+    : "<li>Tap the ⋮ menu in Chrome</li><li>Choose “Install app” or “Add to Home screen”</li><li>Tap “Install” and find the Ahmed Amer icon on your screen</li>"}</ol><button class="btn block" onclick="closeSheet()">${t("ok")}</button>`); }
   if (isIOS) openSheet(`<h2>${t("iosInstT")}</h2><ol class="steps"><li>${t("ios1")}</li><li>${t("ios2")}</li><li>${LANG==="ar" ? "دوس «إضافة»، وهتلاقي أيقونة أحمد عامر على الشاشة" : "Tap “Add” and find the Ahmed Amer icon on your screen"}</li></ol><button class="btn block" onclick="closeSheet()">${t("ok")}</button>`);
 });
 
